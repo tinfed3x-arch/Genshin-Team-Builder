@@ -195,15 +195,29 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                   </div>
                   {(() => {
                     // KQM quick-guide URLs follow `/q/<slug>-quickguide/`,
-                    // e.g. Aino → /q/aino-quickguide/. Slugify on the full
-                    // character name; if KQM doesn't have that exact page
-                    // their 404 surfaces a search box for easy navigation.
-                    const slug = charData.name
-                      .toLowerCase()
-                      .normalize("NFD")
-                      .replace(/[\u0300-\u036f]/g, "")
-                      .replace(/[^a-z0-9]+/g, "-")
-                      .replace(/^-+|-+$/g, "");
+                    // e.g. Aino → /q/aino-quickguide/. Most characters
+                    // slugify cleanly from their full name, but KQM filed
+                    // many Inazuman characters under the given name only,
+                    // so we override those explicitly.
+                    const KQM_SLUG_OVERRIDES: Record<string, string> = {
+                      "Yae Miko": "yae",
+                      "Raiden Shogun": "raiden",
+                      "Kamisato Ayaka": "ayaka",
+                      "Kamisato Ayato": "ayato",
+                      "Kaedehara Kazuha": "kazuha",
+                      "Sangonomiya Kokomi": "kokomi",
+                      "Arataki Itto": "itto",
+                      "Shikanoin Heizou": "heizou",
+                      "Kujou Sara": "sara",
+                    };
+                    const slug =
+                      KQM_SLUG_OVERRIDES[charData.name] ??
+                      charData.name
+                        .toLowerCase()
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")
+                        .replace(/[^a-z0-9]+/g, "-")
+                        .replace(/^-+|-+$/g, "");
                     const href = `https://keqingmains.com/q/${slug}-quickguide/`;
                     return (
                       <a
