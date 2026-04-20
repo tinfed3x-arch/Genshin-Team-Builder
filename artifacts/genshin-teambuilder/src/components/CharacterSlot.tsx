@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Star } from "lucide-react";
+import { Star, ExternalLink } from "lucide-react";
 import type { SlotState, LevelableTalentKey } from "@/lib/teamState";
 import { LEVELABLE_TALENT_KEYS, defaultSlot } from "@/lib/teamState";
 import { cn } from "@/lib/utils";
@@ -193,6 +193,17 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                   <div className="text-xs text-yellow-500">
                     {renderStars(charData.rarity)}
                   </div>
+                  <a
+                    href={`https://keqingmains.com/?s=${encodeURIComponent(charData.name)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary hover:underline transition-colors"
+                    title="Open KeqingMains community guide in a new tab"
+                    data-testid={`link-kqm-${slotIndex}`}
+                  >
+                    KQM guide
+                    <ExternalLink className="h-3 w-3" aria-hidden />
+                  </a>
                 </div>
               </div>
             )}
