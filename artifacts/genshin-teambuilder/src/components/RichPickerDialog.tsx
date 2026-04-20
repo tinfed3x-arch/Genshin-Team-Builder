@@ -10,7 +10,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -627,7 +626,7 @@ export function RichPickerDialog({
         </div>
 
         {/* Result list */}
-        <ScrollArea className="flex-1 max-h-[60vh]">
+        <div className="flex-1 min-h-0 overflow-y-auto">
           <div className="p-3 sm:p-4">
             {kind === "character" && (
               <CharacterGrid
@@ -659,7 +658,7 @@ export function RichPickerDialog({
               </div>
             )}
           </div>
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
