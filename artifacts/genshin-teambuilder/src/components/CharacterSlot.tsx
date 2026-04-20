@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SearchableSelect } from "@/components/SearchableSelect";
-import { CollapsibleSection } from "@/components/CollapsibleSection";
+import { CollapsibleSection, openSection } from "@/components/CollapsibleSection";
 import {
   Accordion,
   AccordionContent,
@@ -73,12 +73,33 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
 
   // Always use functional updates so multiple setters in one event don't clobber each other.
   const update = (patch: Partial<SlotState>) => onChange((prev) => ({ ...prev, ...patch }));
+  // Section IDs the slot owns — used to auto-expand a section when its
+  // related field changes via these setters (not via team load / share link).
+  const weaponSectionId = `slot-${slotIndex}-weapon-details`;
+  const constellationSectionId = `slot-${slotIndex}-constellation-details`;
+  const setBonusesSectionId = `slot-${slotIndex}-set-bonuses`;
+
   const setCharacterName = (v: string | null) => update({ characterName: v });
-  const setConstellation = (v: number) => update({ constellation: v });
-  const setWeaponName = (v: string | null) => update({ weaponName: v });
-  const setArtifactMode = (v: "4pc" | "2pc") => update({ artifactMode: v });
-  const setArtifactSet1 = (v: string | null) => update({ artifactSet1: v });
-  const setArtifactSet2 = (v: string | null) => update({ artifactSet2: v });
+  const setConstellation = (v: number) => {
+    update({ constellation: v });
+    if (v > 0) openSection(constellationSectionId);
+  };
+  const setWeaponName = (v: string | null) => {
+    update({ weaponName: v });
+    if (v) openSection(weaponSectionId);
+  };
+  const setArtifactMode = (v: "4pc" | "2pc") => {
+    update({ artifactMode: v });
+    openSection(setBonusesSectionId);
+  };
+  const setArtifactSet1 = (v: string | null) => {
+    update({ artifactSet1: v });
+    if (v) openSection(setBonusesSectionId);
+  };
+  const setArtifactSet2 = (v: string | null) => {
+    update({ artifactSet2: v });
+    if (v) openSection(setBonusesSectionId);
+  };
   const setSandsMain = (v: string) => update({ sandsMain: v });
   const setGobletMain = (v: string) => update({ gobletMain: v });
   const setCircletMain = (v: string) => update({ circletMain: v });

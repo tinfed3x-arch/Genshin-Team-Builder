@@ -8,8 +8,10 @@ import {
 import { cn } from "@/lib/utils";
 
 export const SET_ALL_EVENT = "gtb:set-all-sections";
+export const OPEN_SECTION_EVENT = "gtb:open-section";
 
 export type SetAllSectionsDetail = { open: boolean };
+export type OpenSectionDetail = { id: string };
 
 interface CollapsibleSectionProps {
   id: string;
@@ -21,7 +23,7 @@ interface CollapsibleSectionProps {
 }
 
 export function CollapsibleSection({
-  id: _id,
+  id,
   title,
   defaultOpen = false,
   badge,
@@ -35,15 +37,28 @@ export function CollapsibleSection({
   const [open, setOpen] = useState<boolean>(defaultOpen);
 
   useEffect(() => {
-    const handler = (ev: Event) => {
+    // Bulk open/close from the toolbar buttons.
+    const setAllHandler = (ev: Event) => {
       const detail = (ev as CustomEvent<SetAllSectionsDetail>).detail;
       if (detail && typeof detail.open === "boolean") {
         setOpen(detail.open);
       }
     };
-    window.addEventListener(SET_ALL_EVENT, handler as EventListener);
-    return () => window.removeEventListener(SET_ALL_EVENT, handler as EventListener);
-  }, []);
+    // Targeted "open this specific section" event used when a related
+    // form field changes (e.g. picking a weapon opens Weapon Details).
+    const openHandler = (ev: Event) => {
+      const detail = (ev as CustomEvent<OpenSectionDetail>).detail;
+      if (detail && detail.id === id) {
+        setOpen(true);
+      }
+    };
+    window.addEventListener(SET_ALL_EVENT, setAllHandler as EventListener);
+    window.addEventListener(OPEN_SECTION_EVENT, openHandler as EventListener);
+    return () => {
+      window.removeEventListener(SET_ALL_EVENT, setAllHandler as EventListener);
+      window.removeEventListener(OPEN_SECTION_EVENT, openHandler as EventListener);
+    };
+  }, [id]);
 
   return (
     <Collapsible open={open} onOpenChange={setOpen} data-testid={testId}>
@@ -72,4 +87,15 @@ export function dispatchSetAllSections(open: boolean) {
   window.dispatchEvent(
     new CustomEvent<SetAllSectionsDetail>(SET_ALL_EVENT, { detail: { open } }),
   );
+}
+
+// Dispatch via a 0ms timeout so the event fires AFTER React commits — by
+// then the target section is mounted and listening, even if it appeared
+// for the first time as a result of the same field change.
+export function openSection(id: string) {
+  setTimeout(() => {
+    window.dispatchEvent(
+      new CustomEvent<OpenSectionDetail>(OPEN_SECTION_EVENT, { detail: { id } }),
+    );
+  }, 0);
 }
