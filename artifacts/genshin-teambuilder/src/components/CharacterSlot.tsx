@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { SearchableSelect } from "@/components/SearchableSelect";
+import { RichPickerDialog } from "@/components/RichPickerDialog";
 import { CollapsibleSection, openSection } from "@/components/CollapsibleSection";
 import {
   Accordion,
@@ -183,13 +183,13 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
             </Badge>
           )}
         </CardTitle>
-        <SearchableSelect
+        <RichPickerDialog
+          kind="character"
           options={characterOptions}
           value={characterName}
           onChange={handleCharacterChange}
           placeholder="Select Character..."
           testId={`select-character-${slotIndex}`}
-          getIcon={getCharacterIcon}
         />
       </CardHeader>
 
@@ -403,13 +403,13 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
             {/* Weapons */}
             <div className="space-y-4">
               <h3 className="font-semibold text-primary">Weapon</h3>
-              <SearchableSelect
+              <RichPickerDialog
+                kind="weapon"
                 options={weaponOptions}
                 value={weaponName}
                 onChange={setWeaponName}
                 placeholder="Select Weapon..."
                 testId={`select-weapon-${slotIndex}`}
-                getIcon={getWeaponIcon}
               />
               {weaponData && (
                 <CollapsibleSection
@@ -526,7 +526,8 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
               </RadioGroup>
 
               <div className="space-y-3">
-                <SearchableSelect
+                <RichPickerDialog
+                  kind="artifact"
                   options={ARTIFACT_NAMES}
                   value={artifactSet1}
                   onChange={setArtifactSet1}
@@ -534,16 +535,15 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                     artifactMode === "4pc" ? "Select 4-Piece Set..." : "Select 1st 2-Piece Set..."
                   }
                   testId={`select-art1-${slotIndex}`}
-                  getIcon={(n) => getArtifactIcon(n)}
                 />
                 {artifactMode === "2pc" && (
-                  <SearchableSelect
+                  <RichPickerDialog
+                    kind="artifact"
                     options={ARTIFACT_NAMES}
                     value={artifactSet2}
                     onChange={setArtifactSet2}
                     placeholder="Select 2nd 2-Piece Set..."
                     testId={`select-art2-${slotIndex}`}
-                    getIcon={(n) => getArtifactIcon(n)}
                   />
                 )}
               </div>
