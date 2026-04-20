@@ -193,17 +193,32 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                   <div className="text-xs text-yellow-500">
                     {renderStars(charData.rarity)}
                   </div>
-                  <a
-                    href={`https://keqingmains.com/?s=${encodeURIComponent(charData.name)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary hover:underline transition-colors"
-                    title="Open KeqingMains community guide in a new tab"
-                    data-testid={`link-kqm-${slotIndex}`}
-                  >
-                    KQM guide
-                    <ExternalLink className="h-3 w-3" aria-hidden />
-                  </a>
+                  {(() => {
+                    // KQM quick-guide URLs follow `/q/<slug>-quickguide/`,
+                    // e.g. Aino → /q/aino-quickguide/. Slugify on the full
+                    // character name; if KQM doesn't have that exact page
+                    // their 404 surfaces a search box for easy navigation.
+                    const slug = charData.name
+                      .toLowerCase()
+                      .normalize("NFD")
+                      .replace(/[\u0300-\u036f]/g, "")
+                      .replace(/[^a-z0-9]+/g, "-")
+                      .replace(/^-+|-+$/g, "");
+                    const href = `https://keqingmains.com/q/${slug}-quickguide/`;
+                    return (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary hover:underline transition-colors"
+                        title="Open KeqingMains quick guide in a new tab"
+                        data-testid={`link-kqm-${slotIndex}`}
+                      >
+                        KQM guide
+                        <ExternalLink className="h-3 w-3" aria-hidden />
+                      </a>
+                    );
+                  })()}
                 </div>
               </div>
             )}
