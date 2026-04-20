@@ -209,6 +209,7 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                       "Arataki Itto": "itto",
                       "Shikanoin Heizou": "heizou",
                       "Kujou Sara": "sara",
+                      "Yumemizuki Mizuki": "mizuki",
                     };
                     const slug =
                       KQM_SLUG_OVERRIDES[charData.name] ??
