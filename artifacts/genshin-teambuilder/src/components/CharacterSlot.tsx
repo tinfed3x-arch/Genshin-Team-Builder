@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Star } from "lucide-react";
 import type { SlotState, LevelableTalentKey } from "@/lib/teamState";
-import { LEVELABLE_TALENT_KEYS } from "@/lib/teamState";
+import { LEVELABLE_TALENT_KEYS, defaultSlot } from "@/lib/teamState";
 import { cn } from "@/lib/utils";
 import {
   Card,
@@ -131,9 +131,11 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
   );
 
   const handleCharacterChange = (name: string) => {
-    setCharacterName(name);
-    setWeaponName(null);
-    setConstellation(0);
+    // Selecting a different character resets every other field on this slot
+    // (weapon, constellation, artifacts, mainstats, talent stars). Same
+    // character re-selected is a no-op so we don't wipe accidental clicks.
+    if (name === characterName) return;
+    onChange(() => ({ ...defaultSlot(), characterName: name }));
   };
 
   const renderStars = (rarity: number) =>
@@ -199,6 +201,7 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
             <CollapsibleSection
               id={`slot-${slotIndex}-character-info`}
               title="Character Info"
+              defaultOpen
               testId={`section-character-info-${slotIndex}`}
             >
               <div className="space-y-2">

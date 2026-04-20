@@ -7,37 +7,9 @@ import {
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 
-const STORAGE_PREFIX = "gtb:section:";
-const BULK_KEY = "gtb:section:_bulk";
 export const SET_ALL_EVENT = "gtb:set-all-sections";
 
 export type SetAllSectionsDetail = { open: boolean };
-
-function readStored(id: string, defaultOpen: boolean): boolean {
-  try {
-    // Per-section state takes precedence — explicit user choices on this section win.
-    const v = localStorage.getItem(STORAGE_PREFIX + id);
-    if (v === "1") return true;
-    if (v === "0") return false;
-    // Otherwise fall back to the most recent bulk action so newly-mounted
-    // sections (e.g. Weapon Details after picking a weapon) honour the
-    // user's last "Collapse All" / "Expand All" intent.
-    const bulk = localStorage.getItem(BULK_KEY);
-    if (bulk === "1") return true;
-    if (bulk === "0") return false;
-  } catch {
-    /* localStorage may be unavailable */
-  }
-  return defaultOpen;
-}
-
-function writeStored(id: string, open: boolean) {
-  try {
-    localStorage.setItem(STORAGE_PREFIX + id, open ? "1" : "0");
-  } catch {
-    /* ignore */
-  }
-}
 
 interface CollapsibleSectionProps {
   id: string;
@@ -49,18 +21,18 @@ interface CollapsibleSectionProps {
 }
 
 export function CollapsibleSection({
-  id,
+  id: _id,
   title,
-  defaultOpen = true,
+  defaultOpen = false,
   badge,
   children,
   testId,
 }: CollapsibleSectionProps) {
-  const [open, setOpen] = useState<boolean>(() => readStored(id, defaultOpen));
-
-  useEffect(() => {
-    writeStored(id, open);
-  }, [id, open]);
+  // Always start from the section's `defaultOpen` value on every page load —
+  // we intentionally do NOT persist per-section state. The Expand-All /
+  // Collapse-All toolbar buttons still work for the current session via
+  // the SET_ALL_EVENT custom event below.
+  const [open, setOpen] = useState<boolean>(defaultOpen);
 
   useEffect(() => {
     const handler = (ev: Event) => {
@@ -97,11 +69,6 @@ export function CollapsibleSection({
 }
 
 export function dispatchSetAllSections(open: boolean) {
-  try {
-    localStorage.setItem(BULK_KEY, open ? "1" : "0");
-  } catch {
-    /* ignore */
-  }
   window.dispatchEvent(
     new CustomEvent<SetAllSectionsDetail>(SET_ALL_EVENT, { detail: { open } }),
   );
