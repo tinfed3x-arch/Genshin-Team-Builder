@@ -16,7 +16,7 @@
     "cors": "^2",
     "drizzle-orm": "catalog:",
     "express": "^5",
-    "genshin-db": "latest",
+    "genshin-db": "^5.2.10",
     "pino": "^9",
     "pino-http": "^10"
   },
