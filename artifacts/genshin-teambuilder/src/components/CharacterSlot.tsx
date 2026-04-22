@@ -207,7 +207,7 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                     (e.currentTarget as HTMLImageElement).style.display = "none";
                   }}
                 />
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="font-semibold text-foreground truncate">
                     {charData.name}
                   </div>
@@ -231,6 +231,7 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                       "Shikanoin Heizou": "heizou",
                       "Kujou Sara": "sara",
                       "Yumemizuki Mizuki": "mizuki",
+                      "Yun Jin": "yunjin",
                     };
                     const slug =
                       KQM_SLUG_OVERRIDES[charData.name] ??
@@ -429,9 +430,9 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                           }}
                         />
                       )}
-                      <div className="flex-1 min-w-0 flex justify-between items-center">
-                        <span className="font-medium text-foreground truncate">{weaponData.name}</span>
-                        <span className="text-yellow-500 ml-2">{renderStars(weaponData.rarity)}</span>
+                      <div className="flex-1 min-w-0 flex justify-between items-center gap-2">
+                        <span className="min-w-0 flex-1 font-medium text-foreground truncate">{weaponData.name}</span>
+                        <span className="text-yellow-500 shrink-0">{renderStars(weaponData.rarity)}</span>
                       </div>
                     </div>
                     {weaponData.mainStatText && (
