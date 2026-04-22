@@ -29,7 +29,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   getCharacterNames,
   getEffectiveCharacterData,
@@ -193,7 +192,7 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
         />
       </CardHeader>
 
-      <ScrollArea className="flex-1 px-6 pb-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6">
         {charData ? (
           <div className="space-y-6">
             {/* Character Portrait */}
@@ -610,7 +609,7 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
             Select a character to view details
           </div>
         )}
-      </ScrollArea>
+      </div>
     </Card>
   );
 }
