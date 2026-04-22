@@ -166,7 +166,7 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
 
   return (
     <Card
-      className="h-full flex flex-col bg-card border-card-border overflow-hidden shadow-lg"
+      className="h-full min-w-0 flex flex-col bg-card border-card-border overflow-hidden shadow-lg"
       data-testid={`character-slot-${slotIndex}`}
     >
       <div className="h-2 w-full" style={{ backgroundColor: elementColor }} />
