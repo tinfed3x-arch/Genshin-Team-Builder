@@ -32,6 +32,30 @@ import {
 
 export type PickerKind = "character" | "weapon" | "artifact";
 
+// Element groups for each reaction the user can filter by. Anemo and Geo are
+// included in Swirl/Crystallize because those are the trigger elements; Lunar
+// Crystallize uses the user-specified Hydro+Geo pair.
+export const REACTION_ELEMENTS: Record<string, ReadonlyArray<string>> = {
+  Vaporize: ["Hydro", "Pyro"],
+  Melt: ["Cryo", "Pyro"],
+  Overload: ["Pyro", "Electro"],
+  Superconduct: ["Cryo", "Electro"],
+  "Electro-Charged": ["Hydro", "Electro"],
+  Frozen: ["Cryo", "Hydro"],
+  Swirl: ["Anemo", "Pyro", "Hydro", "Cryo", "Electro"],
+  Crystallize: ["Geo", "Pyro", "Hydro", "Cryo", "Electro"],
+  Burning: ["Pyro", "Dendro"],
+  Bloom: ["Hydro", "Dendro"],
+  Hyperbloom: ["Electro", "Hydro", "Dendro"],
+  Burgeon: ["Pyro", "Hydro", "Dendro"],
+  Quicken: ["Electro", "Dendro"],
+  Aggravate: ["Electro", "Dendro"],
+  Spread: ["Electro", "Dendro"],
+  "Lunar Crystallize": ["Hydro", "Geo"],
+};
+
+const REACTION_NAMES = Object.keys(REACTION_ELEMENTS);
+
 interface RichPickerDialogProps {
   kind: PickerKind;
   options: string[];
@@ -232,6 +256,7 @@ export function RichPickerDialog({
   const [elementFilter, setElementFilter] = React.useState<string>("all");
   const [weaponTypeFilter, setWeaponTypeFilter] = React.useState<string>("all");
   const [regionFilter, setRegionFilter] = React.useState<string>("all");
+  const [reactionFilter, setReactionFilter] = React.useState<string>("all");
   const [mainStatFilter, setMainStatFilter] = React.useState<string>("all");
   const [sort, setSort] = React.useState<string>(
     kind === "weapon" ? "atk-desc" : "rarity-desc",
@@ -252,6 +277,7 @@ export function RichPickerDialog({
       setElementFilter("all");
       setWeaponTypeFilter("all");
       setRegionFilter("all");
+      setReactionFilter("all");
       setMainStatFilter("all");
       setSort(kind === "weapon" ? "atk-desc" : "rarity-desc");
     }
@@ -329,6 +355,13 @@ export function RichPickerDialog({
       out = out.filter((r) => r.weapon === weaponTypeFilter);
     if (regionFilter !== "all")
       out = out.filter((r) => r.region === regionFilter);
+    if (reactionFilter !== "all") {
+      const allowed = REACTION_ELEMENTS[reactionFilter];
+      if (allowed) {
+        const allowedSet = new Set(allowed);
+        out = out.filter((r) => allowedSet.has(r.element));
+      }
+    }
     return [...out].sort((a, b) => {
       switch (sort) {
         case "name-asc":
@@ -354,6 +387,7 @@ export function RichPickerDialog({
     elementFilter,
     weaponTypeFilter,
     regionFilter,
+    reactionFilter,
     sort,
   ]);
 
@@ -418,6 +452,7 @@ export function RichPickerDialog({
     setElementFilter("all");
     setWeaponTypeFilter("all");
     setRegionFilter("all");
+    setReactionFilter("all");
     setMainStatFilter("all");
   };
 
@@ -572,6 +607,25 @@ export function RichPickerDialog({
                 <SelectContent>
                   <SelectItem value="all">Any region</SelectItem>
                   {facets.regions.map((r) => (
+                    <SelectItem key={r} value={r}>
+                      {r}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {kind === "character" && (
+              <Select value={reactionFilter} onValueChange={setReactionFilter}>
+                <SelectTrigger
+                  className="h-8 text-xs w-auto min-w-[140px]"
+                  data-testid={`${testId}-reaction`}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any reaction</SelectItem>
+                  {REACTION_NAMES.map((r) => (
                     <SelectItem key={r} value={r}>
                       {r}
                     </SelectItem>
