@@ -116,6 +116,11 @@ type CharRow = {
   name: string;
   rarity: number;
   element: string;
+  // True for elementless playable units (Manekin, Manekina) whose in-game
+  // element is granted by their teammate. We surface them in every Element
+  // and Reaction filter so users planning a team don't have to disable
+  // those filters to find them.
+  isElementless: boolean;
   weapon: string;
   ascensionStat: string;
   region: string;
@@ -161,7 +166,12 @@ const buildCharRow = (name: string): CharRow => {
 const buildCharRowImpl = (name: string): CharRow => {
   const c = getEffectiveCharacterData(name);
   const rarity = (c?.rarity as number | undefined) ?? 0;
-  const element = (c?.elementText as string | undefined) ?? "—";
+  const elementRaw = (c?.elementText as string | undefined) ?? "—";
+  // Treat "None" (genshin-db's elementType ELEMENT_NONE — Manekin/Manekina)
+  // as elementless rather than a real element so element/reaction filters
+  // don't hide them.
+  const isElementless = elementRaw === "None";
+  const element = isElementless ? "Any" : elementRaw;
   const weapon = (c?.weaponText as string | undefined) ?? "—";
   const ascensionStat = (c?.substatText as string | undefined) ?? "—";
   const region = (c?.region as string | undefined) ?? "—";
@@ -170,6 +180,7 @@ const buildCharRowImpl = (name: string): CharRow => {
     name,
     rarity,
     element,
+    isElementless,
     weapon,
     ascensionStat,
     region,
@@ -307,8 +318,10 @@ export function RichPickerDialog({
         rarities: Array.from(new Set(charRows.map((r) => r.rarity)))
           .filter((n) => n > 0)
           .sort((a, b) => b - a),
+        // Exclude the "Any" placeholder used for elementless rows so it
+        // never appears as a selectable element in the Element dropdown.
         elements: Array.from(new Set(charRows.map((r) => r.element)))
-          .filter((s) => s && s !== "—")
+          .filter((s) => s && s !== "—" && s !== "Any")
           .sort(),
         weaponTypes: Array.from(new Set(charRows.map((r) => r.weapon)))
           .filter((s) => s && s !== "—")
@@ -360,7 +373,9 @@ export function RichPickerDialog({
     if (rarityFilter !== "all")
       out = out.filter((r) => r.rarity === Number(rarityFilter));
     if (elementFilter !== "all")
-      out = out.filter((r) => r.element === elementFilter);
+      // Elementless units (Manekin/Manekina) match every element filter
+      // because in-game they take on the team's element.
+      out = out.filter((r) => r.isElementless || r.element === elementFilter);
     if (weaponTypeFilter !== "all")
       out = out.filter((r) => r.weapon === weaponTypeFilter);
     if (regionFilter !== "all")
@@ -369,7 +384,11 @@ export function RichPickerDialog({
       const allowed = REACTION_ELEMENTS[reactionFilter];
       if (allowed) {
         const allowedSet = new Set(allowed);
-        out = out.filter((r) => allowedSet.has(r.element));
+        // Elementless units can adopt any element, so they participate in
+        // every reaction — let them pass the reaction filter unconditionally.
+        out = out.filter(
+          (r) => r.isElementless || allowedSet.has(r.element),
+        );
       }
     }
     if (ascensionStatFilter !== "all")
@@ -829,8 +848,13 @@ function CharacterGrid({
                 <div
                   className="text-[11px] mt-1 truncate"
                   style={{ color: elColor }}
+                  title={
+                    r.isElementless
+                      ? "Element is granted by teammates in-game — matches every element and reaction filter"
+                      : undefined
+                  }
                 >
-                  {r.element} · {r.weapon}
+                  {r.isElementless ? "Any element" : r.element} · {r.weapon}
                 </div>
                 <div className="text-[10px] text-muted-foreground truncate">
                   {isTravelerForm(r.name) ? "Traveler" : r.region}

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { RichPickerDialog } from "@/components/RichPickerDialog";
+import TalentAttributesTable from "@/components/TalentAttributesTable";
 import { CollapsibleSection, openSection } from "@/components/CollapsibleSection";
 import {
   Accordion,
@@ -356,7 +357,16 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
               {talentData ? (
                 <Accordion type="multiple" className="w-full text-sm">
                   {TALENT_KEYS.map((talentKey) => {
-                    const tData = talentData[talentKey] as { name?: string; description?: string } | undefined;
+                    const tData = talentData[talentKey] as
+                      | {
+                          name?: string;
+                          description?: string;
+                          attributes?: {
+                            labels?: string[];
+                            parameters?: Record<string, number[]>;
+                          };
+                        }
+                      | undefined;
                     if (!tData || !tData.name) return null;
                     const isLevelable = (LEVELABLE_TALENT_KEYS as readonly string[]).includes(talentKey);
                     const isLeveled =
@@ -407,6 +417,10 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                         </div>
                         <AccordionContent className="text-xs text-muted-foreground leading-relaxed">
                           {stripHtml(tData.description ?? "")}
+                          <TalentAttributesTable
+                            attributes={tData.attributes}
+                            testId={`talent-attrs-${slotIndex}-${talentKey}`}
+                          />
                         </AccordionContent>
                       </AccordionItem>
                     );
