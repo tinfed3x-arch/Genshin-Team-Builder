@@ -169,7 +169,7 @@ type FilterCacheEntry = {
   sort: string;
 };
 const makeDefaultFilters = (
-  kind: "character" | "weapon" | "artifact",
+  _kind: "character" | "weapon" | "artifact",
 ): FilterCacheEntry => ({
   rarityFilter: "all",
   elementFilter: "all",
@@ -178,7 +178,10 @@ const makeDefaultFilters = (
   reactionFilter: "all",
   ascensionStatFilter: "all",
   mainStatFilter: "all",
-  sort: kind === "weapon" ? "atk-desc" : "rarity-desc",
+  // Alphabetical by name is the default sort across every picker kind so
+  // users see a predictable, easy-to-scan list before tweaking anything.
+  // The sort dropdown still offers rarity-desc, atk-desc, etc.
+  sort: "name-asc",
 });
 const filterCache: Record<"character" | "weapon" | "artifact", FilterCacheEntry> = {
   character: makeDefaultFilters("character"),
