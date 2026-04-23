@@ -2,7 +2,11 @@ import * as React from "react";
 
 const CHAR_KEY = "gtb:owned-characters";
 const WEAP_KEY = "gtb:owned-weapons";
-const FLAG_KEY = "gtb:owned-only";
+const FLAG_CHAR_KEY = "gtb:owned-only-characters";
+const FLAG_WEAP_KEY = "gtb:owned-only-weapons";
+// Legacy single-toggle key from the previous version. Read once to migrate
+// users who already enabled "Owned only" before the split.
+const LEGACY_FLAG_KEY = "gtb:owned-only";
 const EVENT = "gtb:inventory-changed";
 
 const EMPTY_SET: ReadonlySet<string> = new Set();
@@ -25,10 +29,10 @@ const safeParse = (raw: string | null): string[] => {
 type SetCache = { raw: string | null; value: ReadonlySet<string> };
 const charCache: SetCache = { raw: "__init__", value: EMPTY_SET };
 const weapCache: SetCache = { raw: "__init__", value: EMPTY_SET };
-let flagCache: { raw: string | null; value: boolean } = {
-  raw: "__init__",
-  value: false,
-};
+type FlagCache = { raw: string | null; value: boolean };
+let flagCharCache: FlagCache = { raw: "__init__", value: false };
+let flagWeapCache: FlagCache = { raw: "__init__", value: false };
+let legacyMigrated = false;
 
 const readCachedSet = (key: string, cache: SetCache): ReadonlySet<string> => {
   if (typeof window === "undefined") return EMPTY_SET;
@@ -42,7 +46,8 @@ const readCachedSet = (key: string, cache: SetCache): ReadonlySet<string> => {
 const invalidateCaches = (): void => {
   charCache.raw = "__init__";
   weapCache.raw = "__init__";
-  flagCache.raw = "__init__";
+  flagCharCache.raw = "__init__";
+  flagWeapCache.raw = "__init__";
 };
 
 const notify = (): void => {
@@ -63,13 +68,41 @@ export const getOwnedCharacters = (): ReadonlySet<string> =>
 export const getOwnedWeapons = (): ReadonlySet<string> =>
   readCachedSet(WEAP_KEY, weapCache);
 
-export const getOwnedOnly = (): boolean => {
-  if (typeof window === "undefined") return false;
-  const raw = window.localStorage.getItem(FLAG_KEY);
-  if (raw === flagCache.raw) return flagCache.value;
-  flagCache = { raw, value: raw === "1" };
-  return flagCache.value;
+// One-time migration: if the user previously enabled the single combined
+// "Owned only" toggle, carry that intent forward to BOTH new toggles so the
+// UI doesn't silently change behavior on upgrade.
+const migrateLegacyFlag = (): void => {
+  if (legacyMigrated) return;
+  if (typeof window === "undefined") return;
+  legacyMigrated = true;
+  const legacy = window.localStorage.getItem(LEGACY_FLAG_KEY);
+  if (legacy === null) return;
+  // Seed each new key independently if absent so partial-migration states
+  // (e.g. one new key already written) still inherit the legacy preference.
+  if (window.localStorage.getItem(FLAG_CHAR_KEY) === null) {
+    window.localStorage.setItem(FLAG_CHAR_KEY, legacy);
+  }
+  if (window.localStorage.getItem(FLAG_WEAP_KEY) === null) {
+    window.localStorage.setItem(FLAG_WEAP_KEY, legacy);
+  }
+  window.localStorage.removeItem(LEGACY_FLAG_KEY);
 };
+
+const readCachedFlag = (key: string, cache: FlagCache): boolean => {
+  if (typeof window === "undefined") return false;
+  migrateLegacyFlag();
+  const raw = window.localStorage.getItem(key);
+  if (raw === cache.raw) return cache.value;
+  cache.raw = raw;
+  cache.value = raw === "1";
+  return cache.value;
+};
+
+export const getOwnedOnlyCharacters = (): boolean =>
+  readCachedFlag(FLAG_CHAR_KEY, flagCharCache);
+
+export const getOwnedOnlyWeapons = (): boolean =>
+  readCachedFlag(FLAG_WEAP_KEY, flagWeapCache);
 
 export const setCharacterOwned = (name: string, owned: boolean): void => {
   const cur = new Set(getOwnedCharacters());
@@ -103,9 +136,15 @@ export const setManyWeaponsOwned = (names: string[], owned: boolean): void => {
   writeSet(WEAP_KEY, cur);
 };
 
-export const setOwnedOnly = (value: boolean): void => {
+export const setOwnedOnlyCharacters = (value: boolean): void => {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(FLAG_KEY, value ? "1" : "0");
+  window.localStorage.setItem(FLAG_CHAR_KEY, value ? "1" : "0");
+  notify();
+};
+
+export const setOwnedOnlyWeapons = (value: boolean): void => {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(FLAG_WEAP_KEY, value ? "1" : "0");
   notify();
 };
 
@@ -136,10 +175,20 @@ export const useInventory = () => {
     getOwnedWeapons,
     getServerEmptySet
   );
-  const ownedOnly = React.useSyncExternalStore(
+  const ownedOnlyCharacters = React.useSyncExternalStore(
     subscribe,
-    getOwnedOnly,
+    getOwnedOnlyCharacters,
     getServerFalse
   );
-  return { ownedChars, ownedWeapons, ownedOnly };
+  const ownedOnlyWeapons = React.useSyncExternalStore(
+    subscribe,
+    getOwnedOnlyWeapons,
+    getServerFalse
+  );
+  return {
+    ownedChars,
+    ownedWeapons,
+    ownedOnlyCharacters,
+    ownedOnlyWeapons,
+  };
 };

@@ -17,6 +17,12 @@ const ELEMENT_CATEGORIES = [
   "ELEMENT_DENDRO",
 ];
 
+// Special-event / elementless playable units that the element-category
+// queries above miss because their elementType is ELEMENT_NONE. genshin-db's
+// matchCategories doesn't support QUALITY_* categories, so we list them by
+// name and union them in (Set dedupes).
+const EXTRA_CHARACTER_NAMES = ["Manekin", "Manekina"];
+
 const WEAPON_TYPE_CATEGORIES = [
   "WEAPON_SWORD_ONE_HAND",
   "WEAPON_CLAYMORE",
@@ -167,7 +173,15 @@ let cached: GenshinDataSnapshot | null = null;
 export const buildGenshinSnapshot = (): GenshinDataSnapshot => {
   if (cached) return cached;
 
-  const characterNames = collectNames(ELEMENT_CATEGORIES, GenshinDb.characters);
+  const characterNames = [
+    ...new Set([
+      ...collectNames(ELEMENT_CATEGORIES, GenshinDb.characters),
+      ...EXTRA_CHARACTER_NAMES.filter((n) => {
+        const c = GenshinDb.characters(n);
+        return c && !Array.isArray(c);
+      }),
+    ]),
+  ].sort();
   const weaponNamesByType: Record<string, string[]> = {};
   for (const type of WEAPON_TYPE_CATEGORIES) {
     weaponNamesByType[type] = collectNames([type], GenshinDb.weapons);

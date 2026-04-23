@@ -257,6 +257,8 @@ export function RichPickerDialog({
   const [weaponTypeFilter, setWeaponTypeFilter] = React.useState<string>("all");
   const [regionFilter, setRegionFilter] = React.useState<string>("all");
   const [reactionFilter, setReactionFilter] = React.useState<string>("all");
+  const [ascensionStatFilter, setAscensionStatFilter] =
+    React.useState<string>("all");
   const [mainStatFilter, setMainStatFilter] = React.useState<string>("all");
   const [sort, setSort] = React.useState<string>(
     kind === "weapon" ? "atk-desc" : "rarity-desc",
@@ -278,6 +280,7 @@ export function RichPickerDialog({
       setWeaponTypeFilter("all");
       setRegionFilter("all");
       setReactionFilter("all");
+      setAscensionStatFilter("all");
       setMainStatFilter("all");
       setSort(kind === "weapon" ? "atk-desc" : "rarity-desc");
     }
@@ -313,6 +316,11 @@ export function RichPickerDialog({
         regions: Array.from(new Set(charRows.map((r) => r.region)))
           .filter((s) => s && s !== "—")
           .sort(),
+        ascensionStats: Array.from(
+          new Set(charRows.map((r) => r.ascensionStat)),
+        )
+          .filter((s) => s && s !== "—")
+          .sort(),
         mainStats: [] as string[],
       };
     }
@@ -324,6 +332,7 @@ export function RichPickerDialog({
         elements: [] as string[],
         weaponTypes: [] as string[],
         regions: [] as string[],
+        ascensionStats: [] as string[],
         mainStats: Array.from(new Set(weapRows.map((r) => r.mainStat)))
           .filter((s) => s && s !== "—")
           .sort(),
@@ -336,6 +345,7 @@ export function RichPickerDialog({
       elements: [],
       weaponTypes: [],
       regions: [],
+      ascensionStats: [],
       mainStats: [],
     };
   }, [kind, charRows, weapRows, artRows]);
@@ -362,6 +372,8 @@ export function RichPickerDialog({
         out = out.filter((r) => allowedSet.has(r.element));
       }
     }
+    if (ascensionStatFilter !== "all")
+      out = out.filter((r) => r.ascensionStat === ascensionStatFilter);
     return [...out].sort((a, b) => {
       switch (sort) {
         case "name-asc":
@@ -388,6 +400,7 @@ export function RichPickerDialog({
     weaponTypeFilter,
     regionFilter,
     reactionFilter,
+    ascensionStatFilter,
     sort,
   ]);
 
@@ -453,6 +466,7 @@ export function RichPickerDialog({
     setWeaponTypeFilter("all");
     setRegionFilter("all");
     setReactionFilter("all");
+    setAscensionStatFilter("all");
     setMainStatFilter("all");
   };
 
@@ -628,6 +642,28 @@ export function RichPickerDialog({
                   {REACTION_NAMES.map((r) => (
                     <SelectItem key={r} value={r}>
                       {r}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {kind === "character" && facets.ascensionStats.length > 0 && (
+              <Select
+                value={ascensionStatFilter}
+                onValueChange={setAscensionStatFilter}
+              >
+                <SelectTrigger
+                  className="h-8 text-xs w-auto min-w-[150px]"
+                  data-testid={`${testId}-ascension`}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any ascension stat</SelectItem>
+                  {facets.ascensionStats.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
                     </SelectItem>
                   ))}
                 </SelectContent>

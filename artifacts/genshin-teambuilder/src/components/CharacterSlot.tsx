@@ -114,17 +114,18 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
       };
     });
 
-  const { ownedChars, ownedWeapons, ownedOnly } = useInventory();
+  const { ownedChars, ownedWeapons, ownedOnlyCharacters, ownedOnlyWeapons } =
+    useInventory();
 
   const allCharacterNames = useMemo(() => getCharacterNames(), []);
   const characterOptions = useMemo(() => {
-    if (!ownedOnly) return allCharacterNames;
+    if (!ownedOnlyCharacters) return allCharacterNames;
     const filtered = allCharacterNames.filter((n) => ownedChars.has(n));
     if (characterName && !filtered.includes(characterName)) {
       return [characterName, ...filtered];
     }
     return filtered;
-  }, [allCharacterNames, ownedOnly, ownedChars, characterName]);
+  }, [allCharacterNames, ownedOnlyCharacters, ownedChars, characterName]);
 
   const charData = useMemo(
     () => (characterName ? getEffectiveCharacterData(characterName) : null),
@@ -145,13 +146,13 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
     const base = !charData
       ? getAllWeaponNames()
       : getWeaponNamesByType(charData.weaponType);
-    if (!ownedOnly) return base;
+    if (!ownedOnlyWeapons) return base;
     const filtered = base.filter((n) => ownedWeapons.has(n));
     if (weaponName && !filtered.includes(weaponName)) {
       return [weaponName, ...filtered];
     }
     return filtered;
-  }, [charData, ownedOnly, ownedWeapons, weaponName]);
+  }, [charData, ownedOnlyWeapons, ownedWeapons, weaponName]);
 
   const weaponData = useMemo(
     () => (weaponName ? getWeaponData(weaponName) : null),
