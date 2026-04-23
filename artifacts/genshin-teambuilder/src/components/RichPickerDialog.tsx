@@ -155,6 +155,37 @@ const charRowCache = new Map<string, CharRow>();
 const weapRowCache = new Map<string, WeapRow>();
 const artRowCache = new Map<string, ArtRow>();
 
+// Persistent (in-memory, page-lifetime) filter selections shared across all
+// picker instances. Keyed by `kind` so character / weapon / artifact pickers
+// each remember their own dropdown choices independently.
+type FilterCacheEntry = {
+  rarityFilter: string;
+  elementFilter: string;
+  weaponTypeFilter: string;
+  regionFilter: string;
+  reactionFilter: string;
+  ascensionStatFilter: string;
+  mainStatFilter: string;
+  sort: string;
+};
+const makeDefaultFilters = (
+  kind: "character" | "weapon" | "artifact",
+): FilterCacheEntry => ({
+  rarityFilter: "all",
+  elementFilter: "all",
+  weaponTypeFilter: "all",
+  regionFilter: "all",
+  reactionFilter: "all",
+  ascensionStatFilter: "all",
+  mainStatFilter: "all",
+  sort: kind === "weapon" ? "atk-desc" : "rarity-desc",
+});
+const filterCache: Record<"character" | "weapon" | "artifact", FilterCacheEntry> = {
+  character: makeDefaultFilters("character"),
+  weapon: makeDefaultFilters("weapon"),
+  artifact: makeDefaultFilters("artifact"),
+};
+
 const buildCharRow = (name: string): CharRow => {
   const cached = charRowCache.get(name);
   if (cached) return cached;
@@ -262,40 +293,85 @@ export function RichPickerDialog({
   testId,
 }: RichPickerDialogProps) {
   const [open, setOpen] = React.useState(false);
+  // Search query is intentionally NOT persisted across slots — it's typed
+  // contextually for the slot you're filling, not a long-lived preference.
   const [query, setQuery] = React.useState("");
-  const [rarityFilter, setRarityFilter] = React.useState<string>("all");
-  const [elementFilter, setElementFilter] = React.useState<string>("all");
-  const [weaponTypeFilter, setWeaponTypeFilter] = React.useState<string>("all");
-  const [regionFilter, setRegionFilter] = React.useState<string>("all");
-  const [reactionFilter, setReactionFilter] = React.useState<string>("all");
-  const [ascensionStatFilter, setAscensionStatFilter] =
-    React.useState<string>("all");
-  const [mainStatFilter, setMainStatFilter] = React.useState<string>("all");
-  const [sort, setSort] = React.useState<string>(
-    kind === "weapon" ? "atk-desc" : "rarity-desc",
+  // All dropdown filters + sort hydrate from a module-level cache keyed by
+  // kind, so picking "Pyro 5★" in slot 1 carries to slots 2–4 without the
+  // user having to re-select on every open. Cache lives for the lifetime
+  // of the page (in-memory only — not persisted to localStorage).
+  const initial = filterCache[kind];
+  const [rarityFilter, setRarityFilter] = React.useState<string>(
+    initial.rarityFilter,
   );
+  const [elementFilter, setElementFilter] = React.useState<string>(
+    initial.elementFilter,
+  );
+  const [weaponTypeFilter, setWeaponTypeFilter] = React.useState<string>(
+    initial.weaponTypeFilter,
+  );
+  const [regionFilter, setRegionFilter] = React.useState<string>(
+    initial.regionFilter,
+  );
+  const [reactionFilter, setReactionFilter] = React.useState<string>(
+    initial.reactionFilter,
+  );
+  const [ascensionStatFilter, setAscensionStatFilter] = React.useState<string>(
+    initial.ascensionStatFilter,
+  );
+  const [mainStatFilter, setMainStatFilter] = React.useState<string>(
+    initial.mainStatFilter,
+  );
+  const [sort, setSort] = React.useState<string>(initial.sort);
 
   const select = (name: string) => {
     onChange(name);
     setOpen(false);
   };
 
-  // Reset transient state whenever the dialog reopens so the user always
-  // starts from a clean, fully-populated list and never sees an empty
-  // dialog because of a leftover filter from a previous session.
+  // When the dialog opens, hydrate from the shared cache in case another
+  // slot's picker mutated it since this instance last rendered. Also clear
+  // the per-instance search box so the user isn't surprised by a stale query.
   React.useEffect(() => {
-    if (open) {
-      setQuery("");
-      setRarityFilter("all");
-      setElementFilter("all");
-      setWeaponTypeFilter("all");
-      setRegionFilter("all");
-      setReactionFilter("all");
-      setAscensionStatFilter("all");
-      setMainStatFilter("all");
-      setSort(kind === "weapon" ? "atk-desc" : "rarity-desc");
-    }
+    if (!open) return;
+    const c = filterCache[kind];
+    setQuery("");
+    setRarityFilter(c.rarityFilter);
+    setElementFilter(c.elementFilter);
+    setWeaponTypeFilter(c.weaponTypeFilter);
+    setRegionFilter(c.regionFilter);
+    setReactionFilter(c.reactionFilter);
+    setAscensionStatFilter(c.ascensionStatFilter);
+    setMainStatFilter(c.mainStatFilter);
+    setSort(c.sort);
   }, [open, kind]);
+
+  // Mirror every filter change back to the shared cache so the next picker
+  // (or the next reopen of this one) sees the latest selections. Using a
+  // single effect with all values in deps keeps the cache eventually
+  // consistent without needing wrapper setters around each useState.
+  React.useEffect(() => {
+    filterCache[kind] = {
+      rarityFilter,
+      elementFilter,
+      weaponTypeFilter,
+      regionFilter,
+      reactionFilter,
+      ascensionStatFilter,
+      mainStatFilter,
+      sort,
+    };
+  }, [
+    kind,
+    rarityFilter,
+    elementFilter,
+    weaponTypeFilter,
+    regionFilter,
+    reactionFilter,
+    ascensionStatFilter,
+    mainStatFilter,
+    sort,
+  ]);
 
   // ----- Build typed rows once per options list -----
   const charRows = React.useMemo<CharRow[]>(
