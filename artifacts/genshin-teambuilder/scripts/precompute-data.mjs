@@ -19,6 +19,12 @@ const ELEMENT_CATEGORIES = [
   "ELEMENT_DENDRO",
 ];
 
+// Special-event / elementless playable units (Manekin, Manekina, etc.) live
+// under QUALITY_ORANGE_SP and have elementType=ELEMENT_NONE, so the element
+// queries above miss them. Including this category catches them while still
+// deduping via Set — Aloy is also ORANGE_SP but already covered by ELEMENT_CRYO.
+const EXTRA_CHARACTER_CATEGORIES = ["QUALITY_ORANGE_SP"];
+
 const WEAPON_TYPE_CATEGORIES = [
   "WEAPON_SWORD_ONE_HAND",
   "WEAPON_CLAYMORE",
@@ -142,7 +148,10 @@ const collectNames = (categories, fn) => {
   return [...set].sort();
 };
 
-const characterNames = collectNames(ELEMENT_CATEGORIES, GenshinDb.characters);
+const characterNames = collectNames(
+  [...ELEMENT_CATEGORIES, ...EXTRA_CHARACTER_CATEGORIES],
+  GenshinDb.characters,
+);
 const weaponNamesByType = {};
 for (const type of WEAPON_TYPE_CATEGORIES) {
   weaponNamesByType[type] = collectNames([type], GenshinDb.weapons);
