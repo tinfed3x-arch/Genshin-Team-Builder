@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useInventory, setOwnedOnly } from "@/lib/inventory";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +42,8 @@ interface TeamToolbarProps {
 
 export default function TeamToolbar({ team, onLoad }: TeamToolbarProps) {
   const { toast } = useToast();
+  const { ownedOnly, ownedChars, ownedWeapons } = useInventory();
+  const inventoryEmpty = ownedChars.size === 0 && ownedWeapons.size === 0;
   const [savedNames, setSavedNames] = useState<string[]>([]);
   const [saveOpen, setSaveOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
@@ -198,6 +204,32 @@ export default function TeamToolbar({ team, onLoad }: TeamToolbarProps) {
       <Button variant="ghost" onClick={handleClear} data-testid="button-clear-team">
         Clear
       </Button>
+
+      <div className="flex items-center gap-2 ml-auto pl-2 border-l border-border/60">
+        <Switch
+          id="owned-only-toggle"
+          checked={ownedOnly}
+          onCheckedChange={setOwnedOnly}
+          disabled={inventoryEmpty && !ownedOnly}
+          data-testid="toggle-owned-only"
+        />
+        <Label
+          htmlFor="owned-only-toggle"
+          className="text-sm cursor-pointer select-none"
+          title={
+            inventoryEmpty
+              ? "Mark something as owned in My Inventory first"
+              : "Only show owned characters and weapons in pickers"
+          }
+        >
+          Owned only
+        </Label>
+        <Link href="/inventory">
+          <Button variant="outline" size="sm" data-testid="link-inventory">
+            My Inventory
+          </Button>
+        </Link>
+      </div>
 
       <Dialog open={shareOpen} onOpenChange={setShareOpen}>
         <DialogContent>

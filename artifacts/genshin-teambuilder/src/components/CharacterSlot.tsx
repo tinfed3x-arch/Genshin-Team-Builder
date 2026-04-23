@@ -46,6 +46,7 @@ import {
   MAIN_STATS,
   stripHtml,
 } from "@/lib/genshin";
+import { useInventory } from "@/lib/inventory";
 
 interface CharacterSlotProps {
   slotIndex: number;
@@ -113,7 +114,17 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
       };
     });
 
-  const characterOptions = useMemo(() => getCharacterNames(), []);
+  const { ownedChars, ownedWeapons, ownedOnly } = useInventory();
+
+  const allCharacterNames = useMemo(() => getCharacterNames(), []);
+  const characterOptions = useMemo(() => {
+    if (!ownedOnly) return allCharacterNames;
+    const filtered = allCharacterNames.filter((n) => ownedChars.has(n));
+    if (characterName && !filtered.includes(characterName)) {
+      return [characterName, ...filtered];
+    }
+    return filtered;
+  }, [allCharacterNames, ownedOnly, ownedChars, characterName]);
 
   const charData = useMemo(
     () => (characterName ? getEffectiveCharacterData(characterName) : null),
@@ -131,9 +142,16 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
   );
 
   const weaponOptions = useMemo(() => {
-    if (!charData) return getAllWeaponNames();
-    return getWeaponNamesByType(charData.weaponType);
-  }, [charData]);
+    const base = !charData
+      ? getAllWeaponNames()
+      : getWeaponNamesByType(charData.weaponType);
+    if (!ownedOnly) return base;
+    const filtered = base.filter((n) => ownedWeapons.has(n));
+    if (weaponName && !filtered.includes(weaponName)) {
+      return [weaponName, ...filtered];
+    }
+    return filtered;
+  }, [charData, ownedOnly, ownedWeapons, weaponName]);
 
   const weaponData = useMemo(
     () => (weaponName ? getWeaponData(weaponName) : null),

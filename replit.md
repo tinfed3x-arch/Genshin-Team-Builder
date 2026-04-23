@@ -26,6 +26,12 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
 
+## Genshin Team Builder Features
+
+- Build pages and inventory page at `/` and `/inventory` (wouter routes).
+- Inventory persists to localStorage (`gtb:owned-characters`, `gtb:owned-weapons`, `gtb:owned-only`); see `src/lib/inventory.ts`.
+- Owned-only toggle in TeamToolbar filters character/weapon picker options to the user's collection while preserving any already-selected name (so shared links still render).
+
 ## Deploying the Genshin Team Builder to GitHub Pages
 
 The team builder works as a fully static site (it ships with a precomputed
