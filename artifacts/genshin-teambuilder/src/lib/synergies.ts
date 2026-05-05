@@ -197,7 +197,7 @@ const NOD_KRAI_CHARACTERS = new Set<string>([
 
 const MOONSIGN_RULE: SynergyRule = {
   id: "named-moonsign",
-  name: "Children of the Bygone Era",
+  name: "Moonsign · Children of the Bygone Era",
   kind: "named",
   elements: [],
   description:
@@ -205,6 +205,34 @@ const MOONSIGN_RULE: SynergyRule = {
   match: (team) => {
     const matchers = slottedCharacters(team).filter((s) =>
       NOD_KRAI_CHARACTERS.has(s.name),
+    );
+    if (matchers.length < 2) return null;
+    return { contributingCharacters: matchers.map((m) => m.name) };
+  },
+};
+
+// Hexerei Rites — Nod-Krai's witchcraft-flavoured kit interaction. Folklore-
+// adjacent Nod-Krai characters (Lauma is the Baltic forest spirit, Jahoda is
+// a Slavic herbalist motif, Columbina the Fatui Harbinger of moonlit rites)
+// can layer their Hexerei effects on the field. Keep this list narrow and
+// extend it as new characters with Hexerei-tagged passives are released.
+const HEXEREI_CHARACTERS = new Set<string>([
+  "Lauma",
+  "Jahoda",
+  "Columbina",
+  "Aino",
+]);
+
+const HEXEREI_RULE: SynergyRule = {
+  id: "named-hexerei-rites",
+  name: "Hexerei Rites",
+  kind: "named",
+  elements: [],
+  description:
+    "Two or more Hexerei-attuned Nod-Krai characters in the party can stack their ritual effects, extending field-time procs and reaction setup. Effects vary by character; check each kit for specifics.",
+  match: (team) => {
+    const matchers = slottedCharacters(team).filter((s) =>
+      HEXEREI_CHARACTERS.has(s.name),
     );
     if (matchers.length < 2) return null;
     return { contributingCharacters: matchers.map((m) => m.name) };
@@ -235,6 +263,7 @@ export const SYNERGY_RULES: SynergyRule[] = [
   ...RESONANCES.map(buildElementalRule),
   PROTECTIVE_CANOPY,
   MOONSIGN_RULE,
+  HEXEREI_RULE,
   MAINACTOR_RULE,
 ];
 
