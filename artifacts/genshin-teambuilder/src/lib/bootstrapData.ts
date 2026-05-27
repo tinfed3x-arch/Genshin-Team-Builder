@@ -2,7 +2,7 @@ import { setGenshinData, type GenshinData } from "./genshin";
 
 // Bump this when the data shape or URL-rewriting rules change so existing
 // users discard their stale cache instead of being stuck with old icon URLs.
-const STORAGE_KEY = "genshin-teambuilder.dataCache.v2";
+const STORAGE_KEY = "genshin-teambuilder.dataCache.v3";
 const FETCH_TIMEOUT_MS = 4000;
 
 type CachedEntry = {
@@ -63,9 +63,10 @@ export const bootstrapGenshinData = async (): Promise<void> => {
   const cached = readCache();
   if (cached) {
     setGenshinData(cached.data);
-    // Refresh in background; takes effect on next page load
+    // Refresh in background and hot-swap if a newer version is available
     fetchFresh().then((fresh) => {
       if (fresh && fresh.version !== cached.data.version) {
+        setGenshinData(fresh);
         writeCache(fresh);
       }
     });
