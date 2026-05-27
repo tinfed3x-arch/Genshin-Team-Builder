@@ -237,7 +237,9 @@ const buildWeapRowImpl = (name: string): WeapRow => {
         rarity?: number;
         weaponText?: string;
         baseAtkValue?: number;
+        maxAtk?: number;
         mainStatText?: string;
+        maxSubstatValue?: number;
         effectName?: string;
         r1?: { description?: string };
       }
@@ -247,7 +249,7 @@ const buildWeapRowImpl = (name: string): WeapRow => {
     name,
     rarity: w?.rarity ?? 0,
     weaponType: w?.weaponText ?? "—",
-    baseAtk: Math.round(w?.baseAtkValue ?? 0),
+    baseAtk: Math.round(w?.maxAtk ?? w?.baseAtkValue ?? 0),
     mainStat: w?.mainStatText ?? "—",
     effectName: w?.effectName ?? "",
     effectText,

@@ -170,7 +170,10 @@ export const formatWeaponSubstat = (
   value: number | null | undefined,
 ): string => {
   if (value == null || !mainStatText) return "—";
-  const isFlat = mainStatText === "ATK" || mainStatText === "DEF" || mainStatText === "HP" || mainStatText === "Elemental Mastery";
+  // Weapon substats: only Elemental Mastery is a flat numeric value.
+  // ATK / DEF / HP / CRIT Rate / CRIT DMG / Energy Recharge / Physical DMG Bonus
+  // are all percentage-based (stored as a decimal fraction, e.g. 0.331 = 33.1%).
+  const isFlat = mainStatText === "Elemental Mastery";
   if (isFlat) return `${Math.round(value)}`;
   return `${(value * 100).toFixed(1).replace(/\.0$/, "")}%`;
 };
