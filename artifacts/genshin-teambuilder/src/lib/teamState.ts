@@ -11,6 +11,7 @@ export type SlotState = {
   characterName: string | null;
   constellation: number;
   weaponName: string | null;
+  weaponRefinement: number; // 1–5
   artifactMode: "4pc" | "2pc";
   artifactSet1: string | null;
   artifactSet2: string | null;
@@ -26,6 +27,7 @@ export const defaultSlot = (): SlotState => ({
   characterName: null,
   constellation: 0,
   weaponName: null,
+  weaponRefinement: 1,
   artifactMode: "4pc",
   artifactSet1: null,
   artifactSet2: null,
@@ -84,6 +86,13 @@ const normalizeSlot = (raw: unknown): SlotState => {
   const base = defaultSlot();
   if (!raw || typeof raw !== "object") return base;
   const r = raw as Record<string, unknown>;
+  const refine =
+    typeof r.weaponRefinement === "number" &&
+    Number.isFinite(r.weaponRefinement) &&
+    r.weaponRefinement >= 1 &&
+    r.weaponRefinement <= 5
+      ? Math.floor(r.weaponRefinement)
+      : base.weaponRefinement;
   return {
     characterName: typeof r.characterName === "string" ? r.characterName : base.characterName,
     constellation:
@@ -91,6 +100,7 @@ const normalizeSlot = (raw: unknown): SlotState => {
         ? Math.floor(r.constellation)
         : base.constellation,
     weaponName: typeof r.weaponName === "string" ? r.weaponName : base.weaponName,
+    weaponRefinement: refine,
     artifactMode: r.artifactMode === "2pc" ? "2pc" : "4pc",
     artifactSet1: typeof r.artifactSet1 === "string" ? r.artifactSet1 : base.artifactSet1,
     artifactSet2: typeof r.artifactSet2 === "string" ? r.artifactSet2 : base.artifactSet2,
@@ -147,6 +157,7 @@ type CompactSlot = [
   string, // character ("" = null)
   number, // constellation
   string, // weapon ("" = null)
+  number, // weapon refinement (1–5, default 1)
   number, // mode: 1 = 4pc, 0 = 2pc
   string, // artifact set 1 ("" = null)
   string, // artifact set 2 ("" = null)
@@ -162,6 +173,7 @@ const slotToCompact = (s: SlotState): CompactSlot | 0 => {
     s.characterName ?? "",
     s.constellation,
     s.weaponName ?? "",
+    s.weaponRefinement,
     s.artifactMode === "2pc" ? 0 : 1,
     s.artifactSet1 ?? "",
     s.artifactSet2 ?? "",
@@ -172,7 +184,7 @@ const slotToCompact = (s: SlotState): CompactSlot | 0 => {
   ];
   // Strip trailing defaults (0 / "") to shorten the JSON payload.
   let end = arr.length;
-  const defaults: (string | number)[] = ["", 0, "", 1, "", "", "", "", "", 0];
+  const defaults: (string | number)[] = ["", 0, "", 1, 1, "", "", "", "", "", 0];
   while (end > 1 && arr[end - 1] === defaults[end - 1]) end--;
   return arr.slice(0, end) as CompactSlot;
 };
@@ -185,17 +197,19 @@ const compactToSlot = (raw: unknown): SlotState => {
   const character = get<string>(0, "");
   const cons = get<number>(1, 0);
   const weapon = get<string>(2, "");
-  const mode = get<number>(3, 1);
-  const set1 = get<string>(4, "");
-  const set2 = get<string>(5, "");
-  const sands = get<string>(6, "");
-  const goblet = get<string>(7, "");
-  const circlet = get<string>(8, "");
-  const lvMask = get<number>(9, 0);
+  const refine = get<number>(3, 1);
+  const mode = get<number>(4, 1);
+  const set1 = get<string>(5, "");
+  const set2 = get<string>(6, "");
+  const sands = get<string>(7, "");
+  const goblet = get<string>(8, "");
+  const circlet = get<string>(9, "");
+  const lvMask = get<number>(10, 0);
   return normalizeSlot({
     characterName: character || null,
     constellation: typeof cons === "number" ? cons : 0,
     weaponName: weapon || null,
+    weaponRefinement: typeof refine === "number" ? refine : 1,
     artifactMode: mode === 0 ? "2pc" : "4pc",
     artifactSet1: set1 || null,
     artifactSet2: set2 || null,

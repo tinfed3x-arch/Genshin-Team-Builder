@@ -161,6 +161,20 @@ export const getArtifactData = (name: string) => {
   return data.artifacts[name] ?? null;
 };
 
+/**
+ * Format a weapon's max-level substat value (decimal fraction) into a human-
+ * readable string that matches the in-game display.
+ */
+export const formatWeaponSubstat = (
+  mainStatText: string | undefined,
+  value: number | null | undefined,
+): string => {
+  if (value == null || !mainStatText) return "—";
+  const isFlat = mainStatText === "ATK" || mainStatText === "DEF" || mainStatText === "HP" || mainStatText === "Elemental Mastery";
+  if (isFlat) return `${Math.round(value)}`;
+  return `${(value * 100).toFixed(1).replace(/\.0$/, "")}%`;
+};
+
 export const stripHtml = (text: string): string => {
   return (text ?? "").replace(/<[^>]*>?/gm, "");
 };

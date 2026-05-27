@@ -46,6 +46,7 @@ import {
   ELEMENT_COLORS,
   MAIN_STATS,
   stripHtml,
+  formatWeaponSubstat,
 } from "@/lib/genshin";
 import { useInventory } from "@/lib/inventory";
 
@@ -63,6 +64,7 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
     characterName,
     constellation,
     weaponName,
+    weaponRefinement,
     artifactMode,
     artifactSet1,
     artifactSet2,
@@ -86,9 +88,10 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
     if (v > 0) openSection(constellationSectionId);
   };
   const setWeaponName = (v: string | null) => {
-    update({ weaponName: v });
+    update({ weaponName: v, weaponRefinement: 1 });
     if (v) openSection(weaponSectionId);
   };
+  const setWeaponRefinement = (v: number) => update({ weaponRefinement: v });
   const setArtifactMode = (v: "4pc" | "2pc") => {
     update({ artifactMode: v });
     openSection(setBonusesSectionId);
@@ -450,7 +453,8 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                   title="Weapon Details"
                   testId={`section-weapon-details-${slotIndex}`}
                 >
-                  <div className="text-sm space-y-2 bg-secondary/30 p-3 rounded-md border border-border/50">
+                  <div className="text-sm space-y-3 bg-secondary/30 p-3 rounded-md border border-border/50">
+                    {/* Header row */}
                     <div className="flex items-center gap-3">
                       {getWeaponIcon(weaponData.name) && (
                         <img
@@ -467,18 +471,67 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                         <span className="text-yellow-500 shrink-0">{renderStars(weaponData.rarity)}</span>
                       </div>
                     </div>
-                    {weaponData.mainStatText && (
-                      <div className="text-xs text-muted-foreground">
-                        <span>{weaponData.mainStatText}</span>
+
+                    {/* Max-level stat line */}
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">
+                        Base ATK (Lv. 90)
+                      </span>
+                      <span className="font-medium text-foreground">
+                        {weaponData.maxAtk != null
+                          ? Math.round(weaponData.maxAtk)
+                          : "—"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">
+                        {weaponData.mainStatText ?? "Substat"} (Lv. 90)
+                      </span>
+                      <span className="font-medium text-foreground">
+                        {formatWeaponSubstat(
+                          weaponData.mainStatText,
+                          weaponData.maxSubstatValue
+                        )}
+                      </span>
+                    </div>
+
+                    {/* Refinement slider */}
+                    {weaponData.effectName && (
+                      <div className="pt-1">
+                        <div className="flex items-center justify-between text-xs mb-2">
+                          <span className="text-muted-foreground">Refinement</span>
+                          <span className="font-semibold text-primary">R{weaponRefinement}</span>
+                        </div>
+                        <Slider
+                          value={[weaponRefinement]}
+                          onValueChange={([v]) => setWeaponRefinement(v)}
+                          min={1}
+                          max={5}
+                          step={1}
+                          className="w-full"
+                        />
                       </div>
                     )}
-                    {weaponData.effectName && weaponData.r1 && (
-                      <div className="pt-2 mt-2 border-t border-border/50">
+
+                    {/* Passive description at current refinement */}
+                    {weaponData.effectName && (
+                      <div className="pt-2 border-t border-border/50">
                         <span className="font-semibold text-foreground text-xs block mb-1">
                           {weaponData.effectName}
                         </span>
                         <span className="text-xs text-muted-foreground block leading-relaxed">
-                          {stripHtml((weaponData.r1 as { description?: string }).description ?? "")}
+                          {(() => {
+                            const rKey = `r${weaponRefinement}` as
+                              | "r1"
+                              | "r2"
+                              | "r3"
+                              | "r4"
+                              | "r5";
+                            const entry = weaponData[rKey] as
+                              | { description?: string }
+                              | undefined;
+                            return stripHtml(entry?.description ?? "");
+                          })()}
                         </span>
                       </div>
                     )}

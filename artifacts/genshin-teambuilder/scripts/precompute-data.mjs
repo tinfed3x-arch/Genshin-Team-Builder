@@ -206,7 +206,12 @@ for (const name of allWeaponNames) {
   const w = GenshinDb.weapons(name);
   if (w && !Array.isArray(w)) {
     fillImageFromFilename(w, WEAPON_MAP);
-    weapons[name] = w;
+    const maxStats = w.stats(90);
+    weapons[name] = {
+      ...w,
+      maxAtk: maxStats?.attack ?? null,
+      maxSubstatValue: maxStats?.specialized ?? null,
+    };
   }
 }
 
