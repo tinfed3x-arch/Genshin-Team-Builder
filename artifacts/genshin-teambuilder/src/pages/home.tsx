@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import CharacterSlot from "@/components/CharacterSlot";
 import TeamToolbar from "@/components/TeamToolbar";
-import TeamSynergyPanel from "@/components/TeamSynergyPanel";
 import {
   type TeamState,
   type SlotState,
@@ -43,8 +42,6 @@ export default function Home() {
           </div>
           <TeamToolbar team={team} onLoad={setTeam} />
         </header>
-
-        <TeamSynergyPanel team={team} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           {team.map((slot, i) => (
