@@ -49,6 +49,7 @@ import {
   formatWeaponSubstat,
 } from "@/lib/genshin";
 import { useInventory } from "@/lib/inventory";
+import { isHexerei, getHexereiData } from "@/lib/hexerei";
 
 interface CharacterSlotProps {
   slotIndex: number;
@@ -435,6 +436,28 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
             </CollapsibleSection>
 
             <Separator className="bg-border/50" />
+
+            {/* Hexerei: Witch's Eve Rite Passive */}
+            {(() => {
+              const hexData = getHexereiData(characterName);
+              if (!hexData) return null;
+              return (
+                <CollapsibleSection
+                  id={`slot-${slotIndex}-hexerei`}
+                  title="Hexerei"
+                  testId={`section-hexerei-${slotIndex}`}
+                >
+                  <div className="text-sm bg-secondary/30 p-3 rounded-md border border-border/50">
+                    <span className="font-semibold text-foreground text-xs block mb-1">
+                      {hexData.name}
+                    </span>
+                    <span className="text-xs text-muted-foreground block leading-relaxed whitespace-pre-line">
+                      {hexData.description}
+                    </span>
+                  </div>
+                </CollapsibleSection>
+              );
+            })()}
 
             {/* Weapons */}
             <div className="space-y-4">
