@@ -49,7 +49,7 @@ import {
   formatWeaponSubstat,
 } from "@/lib/genshin";
 import { useInventory } from "@/lib/inventory";
-import { isHexerei, getHexereiData } from "@/lib/hexerei";
+import { getHexereiData } from "@/lib/hexerei";
 
 interface CharacterSlotProps {
   slotIndex: number;
@@ -429,35 +429,32 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                       </AccordionItem>
                     );
                   })}
+                  {/* Hexerei: Witch's Eve Rite Passive */}
+                  {(() => {
+                    const hexData = getHexereiData(characterName);
+                    if (!hexData) return null;
+                    return (
+                      <AccordionItem value="hexerei" key="hexerei" className="border-border/50">
+                        <div className="flex items-center gap-1">
+                          <span className="w-6 shrink-0" aria-hidden />
+                          <AccordionTrigger className="hover:no-underline py-2 text-purple-400 hover:text-purple-300 transition-colors flex-1">
+                            <span className="truncate pr-4 text-left flex items-center gap-1.5">
+                              <span className="inline-block w-1.5 h-1.5 rounded-full bg-purple-400" />
+                              {hexData.name}
+                            </span>
+                          </AccordionTrigger>
+                        </div>
+                        <AccordionContent className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line bg-purple-500/5 rounded-md p-2 -mx-2">
+                          {hexData.description}
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })()}
                 </Accordion>
               ) : (
                 <p className="text-xs text-muted-foreground">No talent data available.</p>
               )}
             </CollapsibleSection>
-
-            <Separator className="bg-border/50" />
-
-            {/* Hexerei: Witch's Eve Rite Passive */}
-            {(() => {
-              const hexData = getHexereiData(characterName);
-              if (!hexData) return null;
-              return (
-                <CollapsibleSection
-                  id={`slot-${slotIndex}-hexerei`}
-                  title="Hexerei"
-                  testId={`section-hexerei-${slotIndex}`}
-                >
-                  <div className="text-sm bg-secondary/30 p-3 rounded-md border border-border/50">
-                    <span className="font-semibold text-foreground text-xs block mb-1">
-                      {hexData.name}
-                    </span>
-                    <span className="text-xs text-muted-foreground block leading-relaxed whitespace-pre-line">
-                      {hexData.description}
-                    </span>
-                  </div>
-                </CollapsibleSection>
-              );
-            })()}
 
             {/* Weapons */}
             <div className="space-y-4">

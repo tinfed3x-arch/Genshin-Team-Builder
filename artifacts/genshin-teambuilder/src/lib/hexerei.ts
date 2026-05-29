@@ -50,14 +50,14 @@ export const HEXEREI_DATA: Record<string, HexereiData> = {
       "Each time Mona's Normal or Charged Attacks hit, she gains one stack of Astral Glow of Mercury for 8s (up to 3 stacks).\nWhen another party member triggers a Vaporize on an enemy, all stacks are consumed; each stack adds 5% damage to that Vaporize instance, up to 15%.\nEach Normal or Charged hit also extends Omen on that enemy by 2s, up to a total of 8 extra seconds.",
   },
   Nicole: {
-    name: "Witch's Eve Rite Passive",
+    name: "Witch's Eve Rite: Light in the Darkness",
     description:
-      "After completing Witch's Homework: Of Wonderland Flowers, Nicole will become a Hexerei character. When the party includes at least 2 Hexerei characters, you will gain the Hexerei: Secret Rite effect, which enhances Hexerei characters.\n\nHexerei: Secret Rite\nAfter unleashing a Hexerei technique, nearby party members' Normal Attack, Charged Attack, Plunging Attack, Elemental Skill, and Elemental Burst DMG are increased by 5.71428% for 15s.\nAfter unleashing a stronger Hexerei technique, nearby Hexerei party members' Normal Attack, Charged Attack, Plunging Attack, Elemental Skill, and Elemental Burst DMG are increased by 7.14285% for 20s.",
+      "After completing Witch's Homework: The Role of a Guide, Nicole becomes a Hexerei character. When the party includes at least 2 Hexerei characters, the Hexerei: Secret Rite effect activates.\n\nIncreases the DMG dealt by Hexerei characters' Arcane Projections by 300% of Nicole's ATK. The buff only applies to the Arcane Projections of Hexerei characters when they are on-field.",
   },
   Prune: {
-    name: "Witch's Eve Rite Passive",
+    name: "Witch's Eve Rite: Witchseeker's Vow",
     description:
-      "After completing Witch's Homework: Of Wonderland Flowers, Prune will become a Hexerei character. When the party includes at least 2 Hexerei characters, you will gain the Hexerei: Secret Rite effect, which enhances Hexerei characters.\n\nHexerei: Secret Rite\nAfter unleashing a Hexerei technique, nearby party members' Normal Attack, Charged Attack, Plunging Attack, Elemental Skill, and Elemental Burst DMG are increased by 5.71428% for 15s.\nAfter unleashing a stronger Hexerei technique, nearby Hexerei party members' Normal Attack, Charged Attack, Plunging Attack, Elemental Skill, and Elemental Burst DMG are increased by 7.14285% for 20s.",
+      "After completing Witch's Homework: Of What Is Contested, Prune becomes a Hexerei character. When the party includes at least 2 Hexerei characters, the Hexerei: Secret Rite effect activates.\n\nWhen any Elemental Reaction is triggered, Hexerei units affected by Tolling Rally gain +45% ATK for 5s. If that reaction is Swirl, the triggering character gains an additional +20% ATK for 5s.",
   },
   Razor: {
     name: "Witch's Eve Rite: Surge of Lightning",
@@ -70,9 +70,9 @@ export const HEXEREI_DATA: Record<string, HexereiData> = {
       "After creating a Small Wind Spirit with her Skill, nearby party members gain roughly 5.71% damage to Normal, Charged, Plunging, Skill, and Burst attacks for 15s.\nAfter creating a Large Wind Spirit with her Burst, nearby Hexerei party members gain about 7.14% damage to the same actions for 20s.",
   },
   Varka: {
-    name: "Witch's Eve Rite Passive",
+    name: "Witch's Eve Rite: Dawn's Return",
     description:
-      "After completing Witch's Homework: Of Wonderland Flowers, Varka will become a Hexerei character. When the party includes at least 2 Hexerei characters, you will gain the Hexerei: Secret Rite effect, which enhances Hexerei characters.\n\nHexerei: Secret Rite\nAfter unleashing a Hexerei technique, nearby party members' Normal Attack, Charged Attack, Plunging Attack, Elemental Skill, and Elemental Burst DMG are increased by 5.71428% for 15s.\nAfter unleashing a stronger Hexerei technique, nearby Hexerei party members' Normal Attack, Charged Attack, Plunging Attack, Elemental Skill, and Elemental Burst DMG are increased by 7.14285% for 20s.",
+      "After completing Witch's Homework: The Untitled Question, Varka becomes a Hexerei character. When the party includes at least 2 Hexerei characters, the Hexerei: Secret Rite effect activates, enhancing his Elemental Skill Four Winds' Ascension.\n\nWhen Varka hits an opponent with Normal Attack(s) while in Sturm und Drang, the cooldown of Four Winds' Ascension is reduced by 1 second.\nWhen Varka switches to Sturm und Drang, he gains an additional use of Four Winds' Ascension.\nAfter switching to Sturm und Drang, Varka gains the Lyrical Libation effect: When unleashing Four Winds' Ascension, he deals additional Anemo DMG.",
   },
   Venti: {
     name: "Witch's Eve Rite: Temporal Wind's Eulogy",
