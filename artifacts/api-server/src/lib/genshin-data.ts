@@ -3,7 +3,6 @@
 // released genshin-db data, redeploy the api-server (the package is pinned
 // to "latest" so each fresh build installs the newest version).
 
-// @ts-expect-error - genshin-db has no types in this workspace
 import GenshinDb from "genshin-db";
 import { createRequire } from "node:module";
 
