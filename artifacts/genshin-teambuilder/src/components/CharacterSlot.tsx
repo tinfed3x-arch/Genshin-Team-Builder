@@ -50,6 +50,7 @@ import {
 } from "@/lib/genshin";
 import { useInventory } from "@/lib/inventory";
 import { getHexereiData } from "@/lib/hexerei";
+import { getRevelationData } from "@/lib/revelation";
 
 interface CharacterSlotProps {
   slotIndex: number;
@@ -446,6 +447,27 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                         </div>
                         <AccordionContent className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line bg-purple-500/5 rounded-md p-2 -mx-2">
                           {hexData.description}
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })()}
+                  {/* Witch's Revelation Passive */}
+                  {(() => {
+                    const revData = getRevelationData(characterName);
+                    if (!revData) return null;
+                    return (
+                      <AccordionItem value="revelation" key="revelation" className="border-border/50">
+                        <div className="flex items-center gap-1">
+                          <span className="w-6 shrink-0" aria-hidden />
+                          <AccordionTrigger className="hover:no-underline py-2 text-cyan-400 hover:text-cyan-300 transition-colors flex-1">
+                            <span className="truncate pr-4 text-left flex items-center gap-1.5">
+                              <span className="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                              {revData.name}
+                            </span>
+                          </AccordionTrigger>
+                        </div>
+                        <AccordionContent className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line bg-cyan-500/5 rounded-md p-2 -mx-2">
+                          {revData.description}
                         </AccordionContent>
                       </AccordionItem>
                     );
