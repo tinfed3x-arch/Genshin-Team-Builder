@@ -1,5 +1,6 @@
 // Elemental Resonance logic based on Genshin Impact in-game rules.
-// Computes active resonances from a team's 4 characters.
+// Descriptions sourced from the Genshin Impact Fandom wiki Team Bonus page
+// (https://genshin-impact.fandom.com/wiki/Team_Bonus).
 
 import { getEffectiveCharacterData } from "./genshin";
 import type { TeamState } from "./teamState";
@@ -17,32 +18,22 @@ export const RESONANCES: Resonance[] = [
     id: "pyro",
     name: "Fervent Flames",
     elements: ["Pyro", "Pyro"],
-    description:
-      "ATK increased by 25%. Affected by Cryo for 40% less time.",
+    description: "Affected by Cryo for 40% less time. Increases ATK by 25%.",
     iconColor: "#E8612B",
   },
   {
     id: "hydro",
     name: "Soothing Water",
     elements: ["Hydro", "Hydro"],
-    description:
-      "Incoming healing increased by 30%. Affected by Pyro for 40% less time.",
+    description: "Affected by Pyro for 40% less time. Increases Max HP by 25%.",
     iconColor: "#1C72D1",
-  },
-  {
-    id: "anemo",
-    name: "Impetuous Winds",
-    elements: ["Anemo", "Anemo"],
-    description:
-      "Stamina Consumption decreased by 15%. Movement SPD increased by 10%. Skill CD decreased by 5%.",
-    iconColor: "#35C5A0",
   },
   {
     id: "electro",
     name: "High Voltage",
     elements: ["Electro", "Electro"],
     description:
-      "Affected by Hydro for 40% less time. Superconduct, Overloaded, and Electro-Charged have a 100% chance to generate an Electro Elemental Particle (CD: 5s).",
+      "Affected by Hydro for 40% less time. Superconduct, Stellar-Conduct, Overloaded, Electro-Charged, Lunar-Charged, Quicken, Aggravate, or Hyperbloom have a 100% chance to generate an Electro Elemental Particle (CD: 5s).",
     iconColor: "#A855B5",
   },
   {
@@ -50,15 +41,23 @@ export const RESONANCES: Resonance[] = [
     name: "Shattering Ice",
     elements: ["Cryo", "Cryo"],
     description:
-      "Affected by Electro for 40% less time. CRIT Rate against enemies affected by Cryo increased by 15%.",
+      "Affected by Electro for 40% less time. Increases CRIT Rate against enemies that are Frozen or affected by Cryo by 15%.",
     iconColor: "#7EC8E3",
+  },
+  {
+    id: "anemo",
+    name: "Impetuous Winds",
+    elements: ["Anemo", "Anemo"],
+    description:
+      "Decreases Stamina Consumption by 15%. Increases Movement SPD by 10%. Shortens Skill CD by 5%.",
+    iconColor: "#35C5A0",
   },
   {
     id: "geo",
     name: "Enduring Rock",
     elements: ["Geo", "Geo"],
     description:
-      "Shield strength increased by 15%. Characters protected by a shield have DMG dealt increased by 15%.",
+      "Increases shield strength by 15%. Additionally, when characters protected by a shield or when Moondrifts formed by Lunar-Crystallize reactions are nearby, the following special characteristics will take effect: DMG dealt increased by 15%, dealing DMG to enemies will decrease their Geo RES by 20% for 15s.",
     iconColor: "#FAB632",
   },
   {
@@ -66,15 +65,14 @@ export const RESONANCES: Resonance[] = [
     name: "Sprawling Greenery",
     elements: ["Dendro", "Dendro"],
     description:
-      "Elemental Mastery increased by 50. After triggering Burning, Quicken, Aggravate, or Spread, all nearby party members gain 30 Elemental Mastery for 6s.",
+      "Elemental Mastery increased by 50. After triggering Burning, Quicken, Bloom, or Lunar-Bloom reactions, all nearby party members gain 30 Elemental Mastery for 6s. After triggering Aggravate, Spread, Hyperbloom, or Burgeon reactions, all nearby party members gain 20 Elemental Mastery for 6s. The durations of the aforementioned effects will be counted independently.",
     iconColor: "#A5C23B",
   },
   {
     id: "protective",
     name: "Protective Canopy",
     elements: ["Pyro", "Hydro", "Electro", "Cryo"],
-    description:
-      "All Elemental RES increased by 15%. Physical RES increased by 15%.",
+    description: "All Elemental RES +15%, Physical RES +15%.",
     iconColor: "#888888",
   },
 ];
