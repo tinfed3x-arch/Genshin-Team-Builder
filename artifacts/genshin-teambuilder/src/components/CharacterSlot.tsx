@@ -685,14 +685,6 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                   <div className="text-sm space-y-2 bg-secondary/30 p-3 rounded-md border border-border/50">
                     {artifactMode === "4pc" && artSet1Data && (
                       <>
-                        {artSet1Data.effect1Pc && (
-                          <div>
-                            <span className="font-semibold text-foreground text-xs">1-Piece:</span>
-                            <span className="text-xs text-muted-foreground block leading-relaxed">
-                              {artSet1Data.effect1Pc}
-                            </span>
-                          </div>
-                        )}
                         {artSet1Data.effect2Pc && (
                           <div>
                             <span className="font-semibold text-foreground text-xs">2-Piece:</span>
@@ -713,26 +705,6 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
                     )}
                     {artifactMode === "2pc" && (
                       <>
-                        {artSet1Data?.effect1Pc && (
-                          <div>
-                            <span className="font-semibold text-foreground text-xs">
-                              1-Piece ({artSet1Data.name}):
-                            </span>
-                            <span className="text-xs text-muted-foreground block leading-relaxed">
-                              {artSet1Data.effect1Pc}
-                            </span>
-                          </div>
-                        )}
-                        {artSet2Data?.effect1Pc && (
-                          <div className="mt-2">
-                            <span className="font-semibold text-foreground text-xs">
-                              1-Piece ({artSet2Data.name}):
-                            </span>
-                            <span className="text-xs text-muted-foreground block leading-relaxed">
-                              {artSet2Data.effect1Pc}
-                            </span>
-                          </div>
-                        )}
                         {artSet1Data?.effect2Pc && (
                           <div>
                             <span className="font-semibold text-foreground text-xs">

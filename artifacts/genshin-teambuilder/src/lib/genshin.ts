@@ -25,6 +25,7 @@ let data: GenshinData = applyManualAdditions(
 
 export const setGenshinData = (next: GenshinData): void => {
   data = applyManualAdditions(next);
+  ARTIFACT_NAMES = buildArtifactNames();
 };
 
 export const getGenshinDataVersion = (): string =>
@@ -96,69 +97,20 @@ export const getWeaponData = (name: string) => {
   return data.weapons[name] ?? null;
 };
 
-export const ARTIFACT_NAMES = [
-  "A Day Carved From Rising Winds",
-  "Adventurer",
-  "Archaic Petra",
-  "Aubade of Morningstar and Moon",
-  "Berserker",
-  "Blizzard Strayer",
-  "Bloodstained Chivalry",
-  "Brave Heart",
-  "Celestial Gift",
-  "Crimson Witch of Flames",
-  "Deepwood Memories",
-  "Defender's Will",
-  "Disenchantment in Deep Shadow",
-  "Desert Pavilion Chronicle",
-  "Echoes of an Offering",
-  "Emblem of Severed Fate",
-  "Finale of the Deep Galleries",
-  "Flower of Paradise Lost",
-  "Fragment of Harmonic Whimsy",
-  "Gambler",
-  "Gilded Dreams",
-  "Gladiator's Finale",
-  "Golden Troupe",
-  "Heart of Depth",
-  "Husk of Opulent Dreams",
-  "Instructor",
-  "Lavawalker",
-  "Long Night's Oath",
-  "Lucky Dog",
-  "Maiden Beloved",
-  "Marechaussee Hunter",
-  "Martial Artist",
-  "Night of the Sky's Unveiling",
-  "Nighttime Whispers in the Echoing Woods",
-  "Noblesse Oblige",
-  "Nymph's Dream",
-  "Obsidian Codex",
-  "Ocean-Hued Clam",
-  "Pale Flame",
-  "Prayers for Destiny",
-  "Prayers for Illumination",
-  "Prayers for Wisdom",
-  "Prayers to Springtime",
-  "Resolution of Sojourner",
-  "Retracing Bolide",
-  "Scholar",
-  "Scroll of the Hero of Cinder City",
-  "Shimenawa's Reminiscence",
-  "Silken Moon's Serenade",
-  "Song of Days Past",
-  "Tenacity of the Millelith",
-  "The Exile",
-  "Thundering Fury",
-  "Thundersoother",
-  "Tiny Miracle",
-  "Traveling Doctor",
-  "Unfinished Reverie",
-  "Vermillion Hereafter",
-  "Viridescent Venerer",
-  "Vourukasha's Glow",
-  "Wanderer's Troupe",
-];
+// All selectable artifact sets, derived from the data: multi-piece sets only
+// (1-piece "Prayers" sets are excluded) with a max rarity of at least 4 stars.
+const buildArtifactNames = (): string[] =>
+  Object.values(data.artifacts as Record<string, { name?: string; rarityList?: number[]; effect2Pc?: string }>)
+    .filter(
+      (a) =>
+        typeof a?.name === "string" &&
+        typeof a?.effect2Pc === "string" &&
+        Math.max(...(a?.rarityList ?? [0])) >= 4,
+    )
+    .map((a) => a.name as string)
+    .sort((x, y) => x.localeCompare(y));
+
+export let ARTIFACT_NAMES = buildArtifactNames();
 
 export const getArtifactData = (name: string) => {
   return data.artifacts[name] ?? null;
@@ -245,13 +197,10 @@ export const getArtifactIcon = (
   piece: ArtifactPiece = "flower",
 ): string | null => {
   const a = data.artifacts[name] as { images?: Record<string, unknown> } | undefined;
-  // Fall back through every piece — 1-piece sets (e.g. Prayers) only have a
-  // circlet, so flower-based fallbacks alone would come up empty.
-  const allPieces = ["flower", "plume", "sands", "goblet", "circlet"];
   return pickImage(
     a?.images,
-    [piece, `mihoyo_${piece}`, ...allPieces, ...allPieces.map((p) => `mihoyo_${p}`)],
-    [`filename_${piece}`, ...allPieces.map((p) => `filename_${p}`)],
+    [piece, `mihoyo_${piece}`, "flower", "mihoyo_flower"],
+    [`filename_${piece}`, "filename_flower"],
   );
 };
 
