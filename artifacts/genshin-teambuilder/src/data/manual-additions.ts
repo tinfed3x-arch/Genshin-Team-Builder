@@ -282,6 +282,128 @@ const MANUAL_WEAPONS = [WHITELAKE_FROSTFEATHER];
 // snapshot from localStorage / the api-server) is never mutated. Each
 // collection is repaired independently so partially populated snapshots
 // still end up consistent.
+
+// ---------------------------------------------------------------------------
+// Artifact sets (Version 7.0) — data from ambr/gi.yatta.moe, icons from enka
+// ---------------------------------------------------------------------------
+
+const MANUAL_ARTIFACTS: Record<string, any>[] = [
+{
+  "id": 15047,
+  "rarityList": [
+    4,
+    5
+  ],
+  "name": "Scarlet Proof",
+  "effect2Pc": "ATK +18%.",
+  "effect4Pc": "Increases the equipping character's CRIT Rate by 16%, and their Stellar Swirl reaction dealt by 40%, for 10s after they trigger a Stellar Swirl reaction.",
+  "flower": {
+    "name": "Honor to Your Devotion",
+    "relicType": "EQUIP_BRACER",
+    "relicText": "Flower of Life",
+    "description": "A bright red flower ornament that symbolizes blazing glory."
+  },
+  "circlet": {
+    "name": "Testament to Your Faith",
+    "relicType": "EQUIP_DRESS",
+    "relicText": "Circlet of Logos",
+    "description": "A bright red helmet. Hopefully it has, once upon a time, protected someone."
+  },
+  "plume": {
+    "name": "Glory to Your Legacy",
+    "relicType": "EQUIP_NECKLACE",
+    "relicText": "Plume of Death",
+    "description": "A bright red quill pen, granted to the youngest blood."
+  },
+  "goblet": {
+    "name": "Chalice of Your Blood and Sorrow",
+    "relicType": "EQUIP_RING",
+    "relicText": "Goblet of Eonothem",
+    "description": "A bright red wine bottle. May you never learn what's been in it."
+  },
+  "sands": {
+    "name": "Time Gifted Unto You",
+    "relicType": "EQUIP_SHOES",
+    "relicText": "Sands of Eon",
+    "description": "A bright red pocket watch marking the time allotted for a conversation."
+  },
+  "images": {
+    "flower": "https://enka.network/ui/UI_RelicIcon_15047_4.png",
+    "filename_flower": "UI_RelicIcon_15047_4",
+    "mihoyo_flower": "https://enka.network/ui/UI_RelicIcon_15047_4.png",
+    "circlet": "https://enka.network/ui/UI_RelicIcon_15047_3.png",
+    "filename_circlet": "UI_RelicIcon_15047_3",
+    "mihoyo_circlet": "https://enka.network/ui/UI_RelicIcon_15047_3.png",
+    "plume": "https://enka.network/ui/UI_RelicIcon_15047_2.png",
+    "filename_plume": "UI_RelicIcon_15047_2",
+    "mihoyo_plume": "https://enka.network/ui/UI_RelicIcon_15047_2.png",
+    "goblet": "https://enka.network/ui/UI_RelicIcon_15047_1.png",
+    "filename_goblet": "UI_RelicIcon_15047_1",
+    "mihoyo_goblet": "https://enka.network/ui/UI_RelicIcon_15047_1.png",
+    "sands": "https://enka.network/ui/UI_RelicIcon_15047_5.png",
+    "filename_sands": "UI_RelicIcon_15047_5",
+    "mihoyo_sands": "https://enka.network/ui/UI_RelicIcon_15047_5.png"
+  }
+},
+{
+  "id": 15048,
+  "rarityList": [
+    4,
+    5
+  ],
+  "name": "Heart of the Furnace",
+  "effect2Pc": "ATK +18%.",
+  "effect4Pc": "Increases the equipping character's ATK by 12% for 12s when they trigger a Stellar Glimmer reaction or deal Stellar Glimmer reaction DMG. Also increases Stellar Glimmer reaction DMG dealt by all nearby party members by 50%. The above effects can trigger even when the equipping character is not on the field, and he DMG bonus from multiple Artifact Sets with the same name do not stack.",
+  "flower": {
+    "name": "Foundryman's Conjecture",
+    "relicType": "EQUIP_BRACER",
+    "relicText": "Flower of Life",
+    "description": "He knew that, unlike the temperature at the heart of the furnace, just how warm or cold a human heart is towards another cannot be clearly measured in degrees."
+  },
+  "circlet": {
+    "name": "Foundryman's Legacy",
+    "relicType": "EQUIP_DRESS",
+    "relicText": "Circlet of Logos",
+    "description": "He knew that, unlike the flame at the heart of the furnace, the resolve to pursue a dream could never be simply passed on to those to come after."
+  },
+  "plume": {
+    "name": "Foundryman's Observation",
+    "relicType": "EQUIP_NECKLACE",
+    "relicText": "Plume of Death",
+    "description": "He knew that, unlike the colors at the heart of the furnace, the outcome of various worldly affairs could not be predicted simply through close observation."
+  },
+  "goblet": {
+    "name": "Foundryman's Magnanimity",
+    "relicType": "EQUIP_RING",
+    "relicText": "Goblet of Eonothem",
+    "description": "He knew that, unlike the flame at the heart of the furnace, which would continue burning indefinitely so long as it is supplied with fuel, friendship was far more fleeting."
+  },
+  "sands": {
+    "name": "Foundryman's Calculus",
+    "relicType": "EQUIP_SHOES",
+    "relicText": "Sands of Eon",
+    "description": "He knew that, unlike the heat at the heart of the furnace, the workings of power could not be controlled by the simple pull of a lever or the press of a button."
+  },
+  "images": {
+    "flower": "https://enka.network/ui/UI_RelicIcon_15048_4.png",
+    "filename_flower": "UI_RelicIcon_15048_4",
+    "mihoyo_flower": "https://enka.network/ui/UI_RelicIcon_15048_4.png",
+    "circlet": "https://enka.network/ui/UI_RelicIcon_15048_3.png",
+    "filename_circlet": "UI_RelicIcon_15048_3",
+    "mihoyo_circlet": "https://enka.network/ui/UI_RelicIcon_15048_3.png",
+    "plume": "https://enka.network/ui/UI_RelicIcon_15048_2.png",
+    "filename_plume": "UI_RelicIcon_15048_2",
+    "mihoyo_plume": "https://enka.network/ui/UI_RelicIcon_15048_2.png",
+    "goblet": "https://enka.network/ui/UI_RelicIcon_15048_1.png",
+    "filename_goblet": "UI_RelicIcon_15048_1",
+    "mihoyo_goblet": "https://enka.network/ui/UI_RelicIcon_15048_1.png",
+    "sands": "https://enka.network/ui/UI_RelicIcon_15048_5.png",
+    "filename_sands": "UI_RelicIcon_15048_5",
+    "mihoyo_sands": "https://enka.network/ui/UI_RelicIcon_15048_5.png"
+  }
+}
+];
+
 export function applyManualAdditions(input: GenshinData): GenshinData {
   const data: GenshinData = {
     ...input,
@@ -294,7 +416,13 @@ export function applyManualAdditions(input: GenshinData): GenshinData {
     ),
     allWeaponNames: [...input.allWeaponNames],
     weapons: { ...input.weapons },
+    artifactNames: [...input.artifactNames],
+    artifacts: { ...input.artifacts },
   };
+  for (const set of MANUAL_ARTIFACTS) {
+    if (!data.artifacts[set.name]) data.artifacts[set.name] = set;
+    if (!data.artifactNames.includes(set.name)) data.artifactNames.push(set.name);
+  }
   for (const { character, talents, constellations } of MANUAL_CHARACTERS) {
     const name = character.name;
     if (!data.characters[name]) data.characters[name] = character;
