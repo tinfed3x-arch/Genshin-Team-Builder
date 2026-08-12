@@ -143,6 +143,7 @@ type ArtRow = {
   name: string;
   maxRarity: number;
   rarityList: number[];
+  effect1Pc: string;
   effect2Pc: string;
   effect4Pc: string;
   searchHay: string;
@@ -273,6 +274,7 @@ const buildArtRowImpl = (name: string): ArtRow => {
   const a = getArtifactData(name) as
     | {
         rarityList?: number[];
+        effect1Pc?: string;
         effect2Pc?: string;
         effect4Pc?: string;
       }
@@ -282,9 +284,10 @@ const buildArtRowImpl = (name: string): ArtRow => {
     name,
     rarityList,
     maxRarity: rarityList.length ? Math.max(...rarityList) : 0,
+    effect1Pc: a?.effect1Pc ?? "",
     effect2Pc: a?.effect2Pc ?? "",
     effect4Pc: a?.effect4Pc ?? "",
-    searchHay: `${name} ${a?.effect2Pc ?? ""} ${a?.effect4Pc ?? ""}`.toLowerCase(),
+    searchHay: `${name} ${a?.effect1Pc ?? ""} ${a?.effect2Pc ?? ""} ${a?.effect4Pc ?? ""}`.toLowerCase(),
   };
 };
 
@@ -1099,6 +1102,12 @@ function ArtifactList({
                     <span className="text-xs text-yellow-500">{rarityLabel}</span>
                   )}
                 </div>
+                {r.effect1Pc && (
+                  <div className="mt-1 text-xs">
+                    <span className="font-semibold text-foreground/90">1-pc:</span>{" "}
+                    <span className="text-muted-foreground">{r.effect1Pc}</span>
+                  </div>
+                )}
                 {r.effect2Pc && (
                   <div className="mt-1 text-xs">
                     <span className="font-semibold text-foreground/90">2-pc:</span>{" "}

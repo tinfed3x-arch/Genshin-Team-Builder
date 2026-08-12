@@ -245,10 +245,13 @@ export const getArtifactIcon = (
   piece: ArtifactPiece = "flower",
 ): string | null => {
   const a = data.artifacts[name] as { images?: Record<string, unknown> } | undefined;
+  // Fall back through every piece — 1-piece sets (e.g. Prayers) only have a
+  // circlet, so flower-based fallbacks alone would come up empty.
+  const allPieces = ["flower", "plume", "sands", "goblet", "circlet"];
   return pickImage(
     a?.images,
-    [piece, `mihoyo_${piece}`, "flower", "mihoyo_flower"],
-    [`filename_${piece}`, "filename_flower"],
+    [piece, `mihoyo_${piece}`, ...allPieces, ...allPieces.map((p) => `mihoyo_${p}`)],
+    [`filename_${piece}`, ...allPieces.map((p) => `filename_${p}`)],
   );
 };
 
