@@ -38,8 +38,7 @@ const ODETTE_CHARACTER = {
   constellation: "Cygnus Olor",
   images: {
     filename_icon: "UI_AvatarIcon_Odette",
-    mihoyo_icon:
-      "https://static.wikia.nocookie.net/gensin-impact/images/8/87/Odette_Icon.png/revision/latest?cb=20260812035719",
+    mihoyo_icon: "https://enka.network/ui/UI_AvatarIcon_Odette.png",
   },
   url: { fandom: "https://genshin-impact.fandom.com/wiki/Odette" },
   version: "7.0",
@@ -144,8 +143,7 @@ const ALYOSHA_CHARACTER = {
   constellation: "Canis Borzoides",
   images: {
     filename_icon: "UI_AvatarIcon_Alyosha",
-    mihoyo_icon:
-      "https://static.wikia.nocookie.net/gensin-impact/images/1/1d/Alyosha_Icon.png/revision/latest?cb=20260812035756",
+    mihoyo_icon: "https://enka.network/ui/UI_AvatarIcon_Alyosha.png",
   },
   url: { fandom: "https://genshin-impact.fandom.com/wiki/Alyosha" },
   version: "7.0",
