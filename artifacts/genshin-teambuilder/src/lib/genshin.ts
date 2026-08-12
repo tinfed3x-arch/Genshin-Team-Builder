@@ -1,4 +1,5 @@
 import bundledData from "../data/genshin-data.json";
+import { applyManualAdditions } from "../data/manual-additions";
 
 export type GenshinData = {
   version?: string;
@@ -18,10 +19,12 @@ export type GenshinData = {
 // Live data snapshot — starts as the bundled fallback; can be swapped at
 // runtime via setGenshinData() to reflect the latest genshin-db release
 // fetched from the api-server.
-let data: GenshinData = bundledData as unknown as GenshinData;
+let data: GenshinData = applyManualAdditions(
+  bundledData as unknown as GenshinData,
+);
 
 export const setGenshinData = (next: GenshinData): void => {
-  data = next;
+  data = applyManualAdditions(next);
 };
 
 export const getGenshinDataVersion = (): string =>

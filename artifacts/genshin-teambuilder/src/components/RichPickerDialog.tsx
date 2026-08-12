@@ -52,6 +52,8 @@ export const REACTION_ELEMENTS: Record<string, ReadonlyArray<string>> = {
   Aggravate: ["Electro", "Dendro"],
   Spread: ["Electro", "Dendro"],
   "Lunar Crystallize": ["Hydro", "Geo"],
+  "Stellar-Conduct": ["Cryo", "Electro"],
+  "Stellar Swirl": ["Anemo", "Cryo"],
 };
 
 const REACTION_NAMES = Object.keys(REACTION_ELEMENTS);
