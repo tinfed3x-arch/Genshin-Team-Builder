@@ -252,9 +252,9 @@ const WHITELAKE_FROSTFEATHER = {
   r4: { description: WHITELAKE_FROSTFEATHER_EFFECT("14%", "95%", "5.5") },
   r5: { description: WHITELAKE_FROSTFEATHER_EFFECT("16%", "110%", "6") },
   images: {
-    icon: "https://static.wikia.nocookie.net/gensin-impact/images/e/ec/Weapon_Whitelake_Frostfeather.png/revision/latest?cb=20260812163243",
-    mihoyo_icon:
-      "https://static.wikia.nocookie.net/gensin-impact/images/e/ec/Weapon_Whitelake_Frostfeather.png/revision/latest?cb=20260812163243",
+    filename_icon: "UI_EquipIcon_Sword_Swanlake",
+    icon: "https://enka.network/ui/UI_EquipIcon_Sword_Swanlake.png",
+    mihoyo_icon: "https://enka.network/ui/UI_EquipIcon_Sword_Swanlake.png",
   },
   version: "7.0",
   maxAtk: 674,
