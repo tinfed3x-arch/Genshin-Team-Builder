@@ -7,6 +7,12 @@
 // once genshin-db ships official data this overlay silently steps aside and
 // can then be deleted.
 import type { GenshinData } from "../lib/genshin";
+import talentAttributes from "./manual-talent-attributes.json";
+
+const ATTRS = talentAttributes as Record<
+  string,
+  Record<string, { labels: string[]; parameters: Record<string, number[]> }>
+>;
 
 const ODETTE_CHARACTER = {
   id: 10000150,
@@ -44,16 +50,19 @@ const ODETTE_TALENTS = {
   name: "Odette",
   combat1: {
     name: "Snow Swan Variation",
+    attributes: ATTRS["Odette"]["Snow Swan Variation"],
     description:
       "Normal Attack\nUnleashes a sword attack of up to 5 consecutive strikes.\n\nCharged Attack\nConsumes a certain amount of Stamina to unleash a dazzling slash on opponents in front of her.\n\nPlunging Attack\nAttacks opponents in her path while plunging from mid-air, then deals AoE DMG upon landing.",
   },
   combat2: {
     name: "Adagio: Phantom Night Dancers",
+    attributes: ATTRS["Odette"]["Adagio: Phantom Night Dancers"],
     description:
       "With slow, graceful dance steps, Odette deals AoE Cryo DMG to the opponent, and also summons her Solo Dance Double to the field.\nIf a Dance Double summoned by Odette is already on the field, this will re-summon the Dance Double and reset its duration.\n\nSolo Dance Double\nAlternates between the Plume and Wing dance moves, periodically attacking nearby opponents and dealing to them AoE Cryo DMG.\nAdditionally, for 6s after unleashing the Elemental Skill, it becomes the special Elemental Skill Adagio: Coda at Dawn's Tolling instead, where a dance duet deals AoE Cryo DMG to nearby opponents over time. When the duet ends, she deals another instance of AoE Cryo DMG that is considered Stellar-Conduct or Stellar Swirl DMG.",
   },
   combat3: {
     name: "Presto: Bluebird Finale",
+    attributes: ATTRS["Odette"]["Presto: Bluebird Finale"],
     description:
       "With quick, lively dance steps, Odette deals multiple instances of AoE Cryo DMG, and summons her Solo Dance Double. She also gains Snow Swan's Dream, which increases the Stellar Glimmer reaction DMG Odette deals.\nAdditionally, for 6s after unleashing the Elemental Burst, Odette's Elemental Skill will be replaced with the special Elemental Skill Adagio: Coda at Dawn's Tolling.\n\nIf there is a Solo Dance Double summoned by Odette on the field, it will be summoned to her side with its duration refreshed.",
   },
@@ -147,18 +156,21 @@ const ALYOSHA_TALENTS = {
   name: "Alyosha",
   combat1: {
     name: "Skirmishing Spear",
+    attributes: ATTRS["Alyosha"]["Skirmishing Spear"],
     description:
       "Normal Attack\nPerforms up to 4 consecutive spear strikes and applies the Hunter's Mark to the opponent hit by the final strike.\n\nCharged Attack\nConsumes a certain amount of Stamina to lunge forward, dealing damage to opponents in his path.\n\nPlunging Attack\nPlunges from mid-air to strike the ground below, damaging opponents along the path and dealing AoE DMG upon impact.",
   },
   combat2: {
     name: "Thunderbolt Strike",
+    attributes: ATTRS["Alyosha"]["Thunderbolt Strike"],
     description:
-      "Alyosha's Elemental Skill. Deals Electro DMG and works together with his hound Tugarin and the Hunter's Mark mechanic. (Full official description not yet published on the Genshin Wiki.)",
+      "Follows his hunter's instincts. Tap or hold to produce different effects as well as apply the Hunter's Mark effect to the hit opponents.\n\nTapping\nFires at opponents in front of him, dealing AoE Electro DMG.\n\nHolding\nEnters aiming mode, then targets opponents within a certain area in front of him. Alyosha's Interruption RES is enhanced when in this mode.\nAt the end of the button hold, he deals Electro DMG to the targeted opponents.",
   },
   combat3: {
     name: "Hunter's Advance",
+    attributes: ATTRS["Alyosha"]["Hunter's Advance"],
     description:
-      "Alyosha's Elemental Burst. Summons his hound Tugarin to fight alongside the party, dealing Electro DMG; Tugarin's attacks also heal nearby active characters via Alyosha's Ascension Passive. (Full official description not yet published on the Genshin Wiki.)",
+      "Summons his trusted companion Tugarin to fight alongside him on the field. This also turns an area in front of him into a Fulgurite Hunting Field for a short time.\n\nFulgurite Hunting Field\n· Continuously taunts nearby opponents to incite them to attack.\n· Every 2s, deals an instance of AoE Electro DMG to any opponent that enters the field.\n\nTugarin\n· If there are any opponents nearby, Tugarin will quickly move close to an opponent and maul them every 2s, dealing Electro DMG.\n· If an opponent affected by the Hunter's Mark effect is hit, the Hunter's Mark will also be activated.\n· Where there are multiple opponents, Tugarin will attack those affected by the Hunter's Mark effect first.",
   },
   passive1: {
     name: "Awakened By the Baying Hounds",
@@ -222,14 +234,16 @@ const WHITELAKE_FROSTFEATHER_EFFECT = (
   `When the equipping character hits an opponent with their Elemental Skill, they gain "Lake-Hued Lament": ATK increases by ${atk} for 8s. This effect can trigger once every 0.1s. Max 3 stacks, and each stack's duration is independent.\nAt 3 stacks, the CRIT DMG of any Stellar Glimmer reaction DMG caused by the equipping character is increased by ${critDmg}, and triggering Stellar Glimmer reactions or Stellar Glimmer reaction DMG will also restore ${energy} Elemental Energy to the character. This Energy recovery effect can trigger once every 3.5s.\nThis effect can be triggered even when the equipping character is off-field.`;
 
 const WHITELAKE_FROSTFEATHER = {
-  id: 11517,
+  id: 11520,
   name: "Whitelake Frostfeather",
   description:
-    "A slim sword said to evoke the image of a swan's feather drifting over a frozen lake. Odette's signature weapon.",
+    "A longsword light as the feathers of a snow swan, and which stays pure and untainted at all times.",
+  descriptionRaw:
+    "A longsword light as the feathers of a snow swan, and which stays pure and untainted at all times.",
   weaponType: "WEAPON_SWORD_ONE_HAND",
   weaponText: "Sword",
   rarity: 5,
-  baseAtkValue: 48,
+  baseAtkValue: 47.537,
   mainStatType: "FIGHT_PROP_CRITICAL",
   mainStatText: "CRIT Rate",
   baseStatText: "4.8%",
