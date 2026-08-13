@@ -8,6 +8,7 @@
 // can then be deleted.
 import type { GenshinData } from "../lib/genshin";
 import talentAttributes from "./manual-talent-attributes.json";
+import travelerCryo from "./manual-traveler-cryo.json";
 
 const ATTRS = talentAttributes as Record<
   string,
@@ -419,6 +420,20 @@ export function applyManualAdditions(input: GenshinData): GenshinData {
     artifactNames: [...input.artifactNames],
     artifacts: { ...input.artifacts },
   };
+  // Traveler (Cryo) ships as an empty stub in older genshin-db releases
+  // (combat1 is `{}` and constellations are empty). Repair the stub with the
+  // manual data, but leave real data untouched once genshin-db fills it in.
+  {
+    const name = "Traveler (Cryo)";
+    const tc = data.talents[name] as { combat1?: { name?: string } } | undefined;
+    if (!tc?.combat1?.name) {
+      data.talents[name] = { ...(tc ?? {}), ...travelerCryo.talents };
+    }
+    const cc = data.constellations[name] as { c1?: { name?: string } } | undefined;
+    if (!cc?.c1?.name) {
+      data.constellations[name] = { ...(cc ?? {}), ...travelerCryo.constellations };
+    }
+  }
   for (const set of MANUAL_ARTIFACTS) {
     if (!data.artifacts[set.name]) data.artifacts[set.name] = set;
     if (!data.artifactNames.includes(set.name)) data.artifactNames.push(set.name);
