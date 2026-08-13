@@ -9,6 +9,7 @@
 import type { GenshinData } from "../lib/genshin";
 import talentAttributes from "./manual-talent-attributes.json";
 import travelerCryo from "./manual-traveler-cryo.json";
+import newWeapons70 from "./manual-weapons-7-0.json";
 
 const ATTRS = talentAttributes as Record<
   string,
@@ -276,7 +277,10 @@ const MANUAL_CHARACTERS = [
   },
 ];
 
-const MANUAL_WEAPONS = [WHITELAKE_FROSTFEATHER];
+const MANUAL_WEAPONS = [
+  WHITELAKE_FROSTFEATHER,
+  ...(newWeapons70 as Record<string, any>[]),
+];
 
 // Returns a shallow-cloned snapshot with any manual entries the input does
 // not already contain. The input object (bundled JSON module or a cached
