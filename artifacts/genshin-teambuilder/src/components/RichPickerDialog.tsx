@@ -573,6 +573,7 @@ export function RichPickerDialog({
     ascensionStatFilter,
     sort,
     ownedChars,
+    value,
   ]);
 
   const filteredWeaps = React.useMemo(() => {

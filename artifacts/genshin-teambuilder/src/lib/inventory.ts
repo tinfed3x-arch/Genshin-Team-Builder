@@ -331,12 +331,28 @@ export const setWeaponOwned = (name: string, owned: boolean): void => {
 
 export const setManyCharactersOwned = (names: string[], owned: boolean): void => {
   const cur = new Set(getOwnedCharacters());
+  const constellations = safeParseNumberMap(
+    window.localStorage.getItem(CHAR_CONSTELLATION_KEY),
+  );
+  let constellationDefaultsChanged = false;
   for (const n of names) {
-    if (owned) cur.add(n);
+    if (owned) {
+      cur.add(n);
+      if (constellations[n] === undefined) {
+        constellations[n] = 0;
+        constellationDefaultsChanged = true;
+      }
+    }
     else {
       cur.delete(n);
       writeNumberMapValue(CHAR_CONSTELLATION_KEY, n, null);
     }
+  }
+  if (constellationDefaultsChanged) {
+    window.localStorage.setItem(
+      CHAR_CONSTELLATION_KEY,
+      JSON.stringify(constellations),
+    );
   }
   writeSet(CHAR_KEY, cur);
 };

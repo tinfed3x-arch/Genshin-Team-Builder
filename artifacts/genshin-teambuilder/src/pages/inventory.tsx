@@ -423,7 +423,7 @@ export default function InventoryPage() {
               My Inventory
             </h1>
             <p className="text-muted-foreground text-sm md:text-base">
-              Mark the characters and weapons you own. Use the "Owned only" toggle on the builder to filter pickers to your collection.
+              Mark the characters and weapons you own. Use the "Owned only" filter in a character or weapon browser to view your collection.
             </p>
           </div>
           <div className="flex flex-wrap justify-center md:justify-end gap-2">
