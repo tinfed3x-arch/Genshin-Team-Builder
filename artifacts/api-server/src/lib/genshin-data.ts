@@ -5,6 +5,8 @@
 
 import GenshinDb from "genshin-db";
 import { createRequire } from "node:module";
+const packageRequire = createRequire(import.meta.url);
+const rawGenshinDb = packageRequire("genshin-db/src/min/data.min.json");
 
 const ELEMENT_CATEGORIES = [
   "ELEMENT_PYRO",
@@ -40,7 +42,7 @@ const TRAVELER_FORMS = [
   "Traveler (Cryo)",
 ];
 
-const ARTIFACT_NAMES = [
+const LEGACY_ARTIFACT_NAMES = [
   "A Day Carved From Rising Winds",
   "Adventurer",
   "Archaic Petra",
@@ -103,6 +105,21 @@ const ARTIFACT_NAMES = [
   "Vourukasha's Glow",
   "Wanderer's Troupe",
 ];
+
+const ARTIFACT_NAMES = Object.values(
+  rawGenshinDb.data.English.artifacts as Record<
+    string,
+    { name?: string; effect2Pc?: string; rarityList?: number[] }
+  >,
+)
+  .filter(
+    (artifact) =>
+      artifact.effect2Pc &&
+      (artifact.rarityList ?? []).some((rarity) => rarity >= 4),
+  )
+  .map((artifact) => artifact.name)
+  .filter((name): name is string => Boolean(name))
+  .sort();
 
 export type GenshinDataSnapshot = {
   version: string;

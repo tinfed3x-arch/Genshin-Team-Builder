@@ -3,11 +3,14 @@
 // the Vite production build (which OOMs).
 import GenshinDb from "genshin-db";
 import { writeFileSync, mkdirSync } from "node:fs";
+import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT_PATH = resolve(__dirname, "..", "src", "data", "genshin-data.json");
+const require = createRequire(import.meta.url);
+const rawGenshinDb = require("genshin-db/src/min/data.min.json");
 
 const ELEMENT_CATEGORIES = [
   "ELEMENT_PYRO",
@@ -43,7 +46,7 @@ const TRAVELER_FORMS = [
   "Traveler (Cryo)",
 ];
 
-const ARTIFACT_NAMES = [
+const LEGACY_ARTIFACT_NAMES = [
   "A Day Carved From Rising Winds",
   "Adventurer",
   "Archaic Petra",
@@ -106,6 +109,17 @@ const ARTIFACT_NAMES = [
   "Vourukasha's Glow",
   "Wanderer's Troupe",
 ];
+
+const ARTIFACT_NAMES = Object.values(
+  rawGenshinDb.data.English.artifacts,
+)
+  .filter(
+    (artifact) =>
+      artifact.effect2Pc &&
+      (artifact.rarityList ?? []).some((rarity) => rarity >= 4),
+  )
+  .map((artifact) => artifact.name)
+  .sort();
 
 // enka.network mirrors all in-game UI icons (old + new) at /ui/{filename}.png.
 // Mihoyo's own CDN omits icons for newer artifact sets, so we override any
