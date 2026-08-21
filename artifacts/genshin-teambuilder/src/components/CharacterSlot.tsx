@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RichPickerDialog } from "@/components/RichPickerDialog";
 import TalentAttributesTable from "@/components/TalentAttributesTable";
@@ -196,6 +197,8 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
     }));
   };
 
+  const clearSlot = () => onChange(() => defaultSlot());
+
   const renderStars = (rarity: number) =>
     Array.from({ length: rarity }, () => "★").join("");
 
@@ -220,14 +223,28 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
             </Badge>
           )}
         </CardTitle>
-        <RichPickerDialog
-          kind="character"
-          options={characterOptions}
-          value={characterName}
-          onChange={handleCharacterChange}
-          placeholder="Select Character..."
-          testId={`select-character-${slotIndex}`}
-        />
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <RichPickerDialog
+              kind="character"
+              options={characterOptions}
+              value={characterName}
+              onChange={handleCharacterChange}
+              placeholder="Select Character..."
+              testId={`select-character-${slotIndex}`}
+            />
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={clearSlot}
+            disabled={!characterName && !weaponName && !artifactSet1 && !artifactSet2}
+            data-testid={`clear-character-slot-${slotIndex}`}
+          >
+            Clear
+          </Button>
+        </div>
       </CardHeader>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6">
