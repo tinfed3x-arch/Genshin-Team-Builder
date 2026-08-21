@@ -48,7 +48,11 @@ import {
   stripHtml,
   formatWeaponSubstat,
 } from "@/lib/genshin";
-import { getWeaponRefinement, useInventory } from "@/lib/inventory";
+import {
+  getCharacterConstellation,
+  getWeaponRefinement,
+  useInventory,
+} from "@/lib/inventory";
 import { getHexereiData } from "@/lib/hexerei";
 import { getRevelationData } from "@/lib/revelation";
 
@@ -84,7 +88,12 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
   const constellationSectionId = `slot-${slotIndex}-constellation-details`;
   const setBonusesSectionId = `slot-${slotIndex}-set-bonuses`;
 
-  const setCharacterName = (v: string | null) => update({ characterName: v });
+  const setCharacterName = (v: string | null) => {
+    update({
+      characterName: v,
+      constellation: v ? (getCharacterConstellation(v) ?? 0) : 0,
+    });
+  };
   const setConstellation = (v: number) => {
     update({ constellation: v });
     if (v > 0) openSection(constellationSectionId);

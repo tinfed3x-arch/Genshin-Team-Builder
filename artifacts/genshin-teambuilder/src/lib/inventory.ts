@@ -175,6 +175,7 @@ export const importGoodInventory = (raw: string): GoodImportResult => {
 
 export const getCharacterConstellation = (name: string): number | null => {
   if (typeof window === "undefined") return null;
+  if (!getOwnedCharacters().has(name)) return null;
   return (
     safeParseNumberMap(window.localStorage.getItem(CHAR_CONSTELLATION_KEY))[name] ??
     null
@@ -183,7 +184,36 @@ export const getCharacterConstellation = (name: string): number | null => {
 
 export const getWeaponRefinement = (name: string): number => {
   if (typeof window === "undefined") return 1;
+  if (!getOwnedWeapons().has(name)) return 1;
   return safeParseNumberMap(window.localStorage.getItem(WEAP_REFINEMENT_KEY))[name] ?? 1;
+};
+
+const writeNumberMapValue = (
+  key: string,
+  name: string,
+  value: number | null,
+): void => {
+  if (typeof window === "undefined") return;
+  const values = safeParseNumberMap(window.localStorage.getItem(key));
+  if (value === null) delete values[name];
+  else values[name] = value;
+  window.localStorage.setItem(key, JSON.stringify(values));
+  notify();
+};
+
+export const setCharacterConstellation = (
+  name: string,
+  constellation: number,
+): void => {
+  const value = validConstellation(constellation);
+  if (value === null || !getOwnedCharacters().has(name)) return;
+  writeNumberMapValue(CHAR_CONSTELLATION_KEY, name, value);
+};
+
+export const setWeaponRefinement = (name: string, refinement: number): void => {
+  const value = validRefinement(refinement);
+  if (value === null || !getOwnedWeapons().has(name)) return;
+  writeNumberMapValue(WEAP_REFINEMENT_KEY, name, value);
 };
 
 // Cached snapshots — required for useSyncExternalStore stability.
@@ -270,14 +300,20 @@ export const getOwnedOnlyWeapons = (): boolean =>
 export const setCharacterOwned = (name: string, owned: boolean): void => {
   const cur = new Set(getOwnedCharacters());
   if (owned) cur.add(name);
-  else cur.delete(name);
+  else {
+    cur.delete(name);
+    writeNumberMapValue(CHAR_CONSTELLATION_KEY, name, null);
+  }
   writeSet(CHAR_KEY, cur);
 };
 
 export const setWeaponOwned = (name: string, owned: boolean): void => {
   const cur = new Set(getOwnedWeapons());
   if (owned) cur.add(name);
-  else cur.delete(name);
+  else {
+    cur.delete(name);
+    writeNumberMapValue(WEAP_REFINEMENT_KEY, name, null);
+  }
   writeSet(WEAP_KEY, cur);
 };
 
@@ -285,7 +321,10 @@ export const setManyCharactersOwned = (names: string[], owned: boolean): void =>
   const cur = new Set(getOwnedCharacters());
   for (const n of names) {
     if (owned) cur.add(n);
-    else cur.delete(n);
+    else {
+      cur.delete(n);
+      writeNumberMapValue(CHAR_CONSTELLATION_KEY, n, null);
+    }
   }
   writeSet(CHAR_KEY, cur);
 };
@@ -294,7 +333,10 @@ export const setManyWeaponsOwned = (names: string[], owned: boolean): void => {
   const cur = new Set(getOwnedWeapons());
   for (const n of names) {
     if (owned) cur.add(n);
-    else cur.delete(n);
+    else {
+      cur.delete(n);
+      writeNumberMapValue(WEAP_REFINEMENT_KEY, n, null);
+    }
   }
   writeSet(WEAP_KEY, cur);
 };

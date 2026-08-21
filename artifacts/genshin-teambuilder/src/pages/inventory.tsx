@@ -36,6 +36,8 @@ import {
   setManyWeaponsOwned,
   getCharacterConstellation,
   getWeaponRefinement,
+  setCharacterConstellation,
+  setWeaponRefinement,
   importGoodInventory,
 } from "@/lib/inventory";
 
@@ -129,6 +131,12 @@ function InventoryGrid({ kind, rows, ownedSet }: InventoryGridProps) {
   const toggleOne = (name: string, owned: boolean) => {
     if (kind === "character") setCharacterOwned(name, owned);
     else setWeaponOwned(name, owned);
+  };
+
+  const updateLevel = (name: string, value: string) => {
+    const level = Number(value);
+    if (kind === "character") setCharacterConstellation(name, level);
+    else setWeaponRefinement(name, level);
   };
 
   const setAllVisible = (owned: boolean) => {
@@ -255,11 +263,8 @@ function InventoryGrid({ kind, rows, ownedSet }: InventoryGridProps) {
             const refinement =
               kind === "weapon" ? getWeaponRefinement(row.name) : null;
             return (
-              <button
+              <div
                 key={row.name}
-                type="button"
-                onClick={() => toggleOne(row.name, !owned)}
-                aria-pressed={owned}
                 data-testid={`inventory-${kind}-card-${row.name.toLowerCase().replace(/\s+/g, "-")}`}
                 className={cn(
                   "group relative flex flex-col items-center gap-2 rounded-lg border p-2 text-left transition-all",
@@ -268,22 +273,29 @@ function InventoryGrid({ kind, rows, ownedSet }: InventoryGridProps) {
                     : "border-border bg-card/50 opacity-70 hover:opacity-100 hover:border-border/80"
                 )}
               >
-                <div className="relative w-full aspect-square rounded-md overflow-hidden bg-secondary/30">
-                  {icon ? (
-                    <img
-                      src={icon}
-                      alt=""
-                      loading="lazy"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.visibility = "hidden";
-                      }}
-                    />
-                  ) : null}
-                  {!owned && (
-                    <div className="absolute inset-0 bg-background/40" aria-hidden />
-                  )}
-                </div>
+                <button
+                  type="button"
+                  onClick={() => toggleOne(row.name, !owned)}
+                  aria-pressed={owned}
+                  className="w-full text-left"
+                >
+                  <div className="relative w-full aspect-square rounded-md overflow-hidden bg-secondary/30">
+                    {icon ? (
+                      <img
+                        src={icon}
+                        alt=""
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).style.visibility = "hidden";
+                        }}
+                      />
+                    ) : null}
+                    {!owned && (
+                      <div className="absolute inset-0 bg-background/40" aria-hidden />
+                    )}
+                  </div>
+                </button>
                 <div className="w-full min-w-0">
                   <div className="text-xs font-medium truncate" title={row.name}>
                     {row.name}
@@ -305,7 +317,7 @@ function InventoryGrid({ kind, rows, ownedSet }: InventoryGridProps) {
                         {row.facetA}
                       </Badge>
                     )}
-                    {constellation !== null && (
+                    {owned && kind === "character" && (
                       <Badge
                         variant="outline"
                         className="px-1.5 py-0 text-[10px] leading-none border-primary/40 text-primary"
@@ -313,7 +325,7 @@ function InventoryGrid({ kind, rows, ownedSet }: InventoryGridProps) {
                         C{constellation}
                       </Badge>
                     )}
-                    {owned && refinement !== null && refinement > 1 && (
+                    {owned && kind === "weapon" && refinement !== null && (
                       <Badge
                         variant="outline"
                         className="px-1.5 py-0 text-[10px] leading-none border-primary/40 text-primary"
@@ -322,8 +334,32 @@ function InventoryGrid({ kind, rows, ownedSet }: InventoryGridProps) {
                       </Badge>
                     )}
                   </div>
+                  {owned && (
+                    <Select
+                      value={String(kind === "character" ? constellation ?? 0 : refinement ?? 1)}
+                      onValueChange={(value) => updateLevel(row.name, value)}
+                    >
+                      <SelectTrigger
+                        className="mt-2 h-7 w-full text-[11px]"
+                        aria-label={`${row.name} ${kind === "character" ? "constellation" : "refinement"} level`}
+                        data-testid={`inventory-${kind}-level-${row.name.toLowerCase().replace(/\s+/g, "-")}`}
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(kind === "character"
+                          ? [0, 1, 2, 3, 4, 5, 6]
+                          : [1, 2, 3, 4, 5]
+                        ).map((level) => (
+                          <SelectItem key={level} value={String(level)}>
+                            {kind === "character" ? `C${level}` : `R${level}`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>
