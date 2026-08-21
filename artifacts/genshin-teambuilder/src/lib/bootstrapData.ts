@@ -2,7 +2,7 @@ import { setGenshinData, type GenshinData } from "./genshin";
 
 // Bump this when the data shape or URL-rewriting rules change so existing
 // users discard their stale cache instead of being stuck with old icon URLs.
-const STORAGE_KEY = "genshin-teambuilder.dataCache.v3";
+const STORAGE_KEY = "genshin-teambuilder.dataCache.v4";
 const FETCH_TIMEOUT_MS = 4000;
 
 type CachedEntry = {
