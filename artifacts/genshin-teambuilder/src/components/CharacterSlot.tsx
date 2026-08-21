@@ -189,7 +189,11 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
     // (weapon, constellation, artifacts, mainstats, talent stars). Same
     // character re-selected is a no-op so we don't wipe accidental clicks.
     if (name === characterName) return;
-    onChange(() => ({ ...defaultSlot(), characterName: name }));
+    onChange(() => ({
+      ...defaultSlot(),
+      characterName: name,
+      constellation: getCharacterConstellation(name) ?? 0,
+    }));
   };
 
   const renderStars = (rarity: number) =>
