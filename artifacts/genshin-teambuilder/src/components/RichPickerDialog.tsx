@@ -26,6 +26,7 @@ import {
   getWeaponIcon,
   getArtifactIcon,
   ELEMENT_COLORS,
+  getCharacterRegion,
   isTravelerForm,
   stripHtml,
 } from "@/lib/genshin";
@@ -229,7 +230,7 @@ const buildCharRowImpl = (name: string): CharRow => {
   const element = isElementless ? "Any" : elementRaw;
   const weapon = (c?.weaponText as string | undefined) ?? "—";
   const ascensionStat = (c?.substatText as string | undefined) ?? "—";
-  const region = (c?.region as string | undefined) ?? "—";
+  const region = getCharacterRegion(name);
   const version = (c?.version as string | undefined) ?? "";
   return {
     name,

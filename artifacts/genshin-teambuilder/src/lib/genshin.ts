@@ -74,6 +74,37 @@ export const getEffectiveCharacterData = (name: string) => {
   return getCharacterData(name);
 };
 
+const ASSOCIATION_REGION_FALLBACKS: Record<string, string> = {
+  ASSOC_SNEZHNAYA: "Snezhnaya",
+  ASSOC_SNEZHNAYA_STAR: "Snezhnaya",
+};
+
+/**
+ * Returns the best location-like label available for a character browser.
+ * Newer and crossover characters do not always have genshin-db's explicit
+ * `region` field, but may still have a useful association or affiliation.
+ */
+export const getCharacterRegion = (name: string): string => {
+  const character = getEffectiveCharacterData(name) as Record<string, unknown> | null;
+  const region = character?.region;
+  if (typeof region === "string" && region.trim()) return region;
+
+  const associationType = character?.associationType;
+  if (
+    typeof associationType === "string" &&
+    ASSOCIATION_REGION_FALLBACKS[associationType]
+  ) {
+    return ASSOCIATION_REGION_FALLBACKS[associationType];
+  }
+
+  const affiliation = character?.affiliation;
+  if (typeof affiliation === "string" && affiliation.trim()) {
+    return affiliation;
+  }
+
+  return "—";
+};
+
 export const getTalentData = (name: string) => {
   return data.talents[name] ?? null;
 };
