@@ -42,6 +42,41 @@ const TRAVELER_FORMS = [
   "Traveler (Cryo)",
 ];
 
+// Manekin and Manekina share one element-agnostic talent kit. These special
+// Wonderland characters are not yet included in genshin-db's talent records.
+const MANEKIN_TALENTS = {
+  combat1: {
+    name: "Outlander Arts: Vigilant Watch",
+    description:
+      "Normal Attack\nPerforms up to 4 rapid strikes.\n\nCharged Attack\nConsumes a certain amount of Stamina to unleash 2 rapid sword strikes.\n\nPlunging Attack\nPlunges from mid-air to strike the ground below, damaging opponents along the path and dealing AoE DMG upon impact.",
+  },
+  combat2: {
+    name: "Punishing Barrage",
+    description:
+      "The Manekin attacks nearby opponents once, dealing AoE DMG corresponding to their own Elemental Type before pulling back rapidly. After unleashing an Elemental Skill, the Manekin's Normal Attacks, Charged Attacks, and Plunging Attacks are converted to deal the corresponding elemental DMG, which cannot be overridden by other Elemental infusions, for a period of time. This effect will disappear when the Manekin leaves the field.\n\nHas 2 charges.\n\n\"A well-measured blow is a necessary warning.\"",
+  },
+  combat3: {
+    name: "No Entry",
+    description:
+      "The Manekin summons a \"Restricted Area\" that follows them around, dealing 1 instance of DMG corresponding to the Manekin's Elemental Type to nearby opponents.\n\nAdditionally, when opponents enter the Restricted Area, they will receive 1 instance of DMG corresponding to the Manekin's Elemental Type. This effect can trigger once every 0.5s.\n\nThe Restricted Area will disappear when the Manekin leaves the field.\n\n\"Those who insist on trespassing within the restricted area will be regarded as hostile and expelled with maximum force.\"",
+  },
+  passive1: {
+    name: "Battlelines Redrawn",
+    description:
+      "When the Manekin leaves the field, if a Restricted Area that they summoned is still active, it will explode, dealing AoE DMG of the Manekin's Elemental Type equal to 200% of the Manekin's ATK.",
+  },
+  passive2: {
+    name: "Combat Readiness",
+    description:
+      "When the Manekin is not on the field and their Elemental Energy is below 30%, they will recover 2 Elemental Energy per second.",
+  },
+  passive3: {
+    name: "Agile Stance",
+    description:
+      "When the Manekin unleashes an Elemental Skill or Burst, it will change to one of its existing Cosmetic Plans at random.",
+  },
+};
+
 const LEGACY_ARTIFACT_NAMES = [
   "A Day Carved From Rising Winds",
   "Adventurer",
@@ -250,6 +285,10 @@ export const buildGenshinSnapshot = (): GenshinDataSnapshot => {
     if (t && !Array.isArray(t)) talents[form] = t;
     const k = GenshinDb.constellations(form);
     if (k && !Array.isArray(k)) constellations[form] = k;
+  }
+
+  for (const name of ["Manekin", "Manekina"]) {
+    talents[name] = MANEKIN_TALENTS;
   }
 
   const weapons: Record<string, unknown> = {};
