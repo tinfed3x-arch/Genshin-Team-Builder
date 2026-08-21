@@ -3,6 +3,7 @@
 // (https://genshin-impact.fandom.com/wiki/Team_Bonus).
 
 import { getEffectiveCharacterData } from "./genshin";
+import { HEXEREI_CHARACTERS } from "./hexerei";
 import type { TeamState } from "./teamState";
 
 export type Resonance = {
@@ -77,6 +78,28 @@ export const RESONANCES: Resonance[] = [
   },
 ];
 
+export const MOONSIGN_CHARACTERS = new Set([
+  "Aino",
+  "Columbina",
+  "Flins",
+  "Illuga",
+  "Ineffa",
+  "Jahoda",
+  "Lauma",
+  "Linnea",
+  "Nefer",
+  "Zibai",
+]);
+
+export type TeamBonusStatus = {
+  count: number;
+  members: string[];
+  active: boolean;
+  name: string;
+  description: string;
+  iconColor: string;
+};
+
 function getTeamElements(team: TeamState): string[] {
   const elements: string[] = [];
   for (const slot of team) {
@@ -120,4 +143,47 @@ export function getActiveResonances(team: TeamState): Resonance[] {
   }
 
   return active;
+}
+
+function getTeamCharacterNames(team: TeamState): string[] {
+  return team.flatMap((slot) => (slot.characterName ? [slot.characterName] : []));
+}
+
+export function getMoonsignStatus(team: TeamState): TeamBonusStatus {
+  const members = getTeamCharacterNames(team).filter((name) =>
+    MOONSIGN_CHARACTERS.has(name),
+  );
+  const count = members.length;
+  const active = count >= 1;
+  const ascendant = count >= 2;
+
+  return {
+    count,
+    members,
+    active,
+    name: ascendant ? "Moonsign: Ascendant Gleam" : "Moonsign: Nascent Gleam",
+    description: ascendant
+      ? "All party members gain Ascendant Gleam. Moonsign characters are enhanced, and non-Moonsign characters can increase nearby Lunar Reaction DMG after casting an Elemental Skill or Burst."
+      : "All party members gain Nascent Gleam. Add a second Moonsign character to reach Ascendant Gleam and enhance Moonsign characters.",
+    iconColor: "#D8B4FE",
+  };
+}
+
+export function getHexereiStatus(team: TeamState): TeamBonusStatus {
+  const members = getTeamCharacterNames(team).filter((name) =>
+    HEXEREI_CHARACTERS.has(name),
+  );
+  const count = members.length;
+
+  return {
+    count,
+    members,
+    active: count >= 2,
+    name: "Hexerei: Secret Rite",
+    description:
+      count >= 2
+        ? "Hexerei characters in this party are further enhanced, including their Witch's Eve Rite Passives and related Talent or Constellation effects."
+        : "Requires at least 2 Hexerei characters in the party to activate Secret Rite.",
+    iconColor: "#F0ABFC",
+  };
 }
