@@ -30,7 +30,11 @@ import {
   isTravelerForm,
   stripHtml,
 } from "@/lib/genshin";
-import { getCharacterConstellation, useInventory } from "@/lib/inventory";
+import {
+  getCharacterConstellation,
+  getWeaponRefinement,
+  useInventory,
+} from "@/lib/inventory";
 import { MOONSIGN_CHARACTERS } from "@/lib/resonance";
 import { isHexerei } from "@/lib/hexerei";
 
@@ -967,6 +971,7 @@ export function RichPickerDialog({
                 rows={filteredWeaps}
                 value={value}
                 onSelect={select}
+                ownedWeapons={ownedWeapons}
                 testId={testId}
               />
             )}
@@ -1104,11 +1109,13 @@ function WeaponList({
   rows,
   value,
   onSelect,
+  ownedWeapons,
   testId,
 }: {
   rows: WeapRow[];
   value: string | null;
   onSelect: (name: string) => void;
+  ownedWeapons: ReadonlySet<string>;
   testId?: string;
 }) {
   return (
@@ -1151,6 +1158,14 @@ function WeaponList({
                   <span className="text-xs text-yellow-500">
                     {renderStars(r.rarity)}
                   </span>
+                  {ownedWeapons.has(r.name) && (
+                    <Badge
+                      variant="outline"
+                      className="shrink-0 px-1.5 py-0 text-[10px] leading-none border-primary/40 text-primary"
+                    >
+                      R{getWeaponRefinement(r.name)}
+                    </Badge>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-1.5 mt-1">
                   <Badge
