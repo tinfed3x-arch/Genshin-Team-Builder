@@ -31,6 +31,8 @@ import {
   stripHtml,
 } from "@/lib/genshin";
 import { getCharacterConstellation, useInventory } from "@/lib/inventory";
+import { MOONSIGN_CHARACTERS } from "@/lib/resonance";
+import { isHexerei } from "@/lib/hexerei";
 
 export type PickerKind = "character" | "weapon" | "artifact";
 
@@ -146,6 +148,8 @@ type CharRow = {
   weapon: string;
   ascensionStat: string;
   region: string;
+  isMoonsign: boolean;
+  isHexerei: boolean;
   version: string;
   searchHay: string;
 };
@@ -186,6 +190,8 @@ type FilterCacheEntry = {
   weaponTypeFilter: string;
   regionFilter: string;
   reactionFilter: string;
+  moonsignFilter: string;
+  hexereiFilter: string;
   ascensionStatFilter: string;
   mainStatFilter: string;
   sort: string;
@@ -198,6 +204,8 @@ const makeDefaultFilters = (
   weaponTypeFilter: "all",
   regionFilter: "all",
   reactionFilter: "all",
+  moonsignFilter: "all",
+  hexereiFilter: "all",
   ascensionStatFilter: "all",
   mainStatFilter: "all",
   // Alphabetical by name is the default sort across every picker kind so
@@ -240,6 +248,8 @@ const buildCharRowImpl = (name: string): CharRow => {
     weapon,
     ascensionStat,
     region,
+    isMoonsign: MOONSIGN_CHARACTERS.has(name),
+    isHexerei: isHexerei(name),
     version,
     searchHay: `${name} ${element} ${weapon} ${region}`.toLowerCase(),
   };
@@ -344,6 +354,12 @@ export function RichPickerDialog({
   const [reactionFilter, setReactionFilter] = React.useState<string>(
     initial.reactionFilter,
   );
+  const [moonsignFilter, setMoonsignFilter] = React.useState<string>(
+    initial.moonsignFilter,
+  );
+  const [hexereiFilter, setHexereiFilter] = React.useState<string>(
+    initial.hexereiFilter,
+  );
   const [ascensionStatFilter, setAscensionStatFilter] = React.useState<string>(
     initial.ascensionStatFilter,
   );
@@ -369,6 +385,8 @@ export function RichPickerDialog({
     setWeaponTypeFilter(c.weaponTypeFilter);
     setRegionFilter(c.regionFilter);
     setReactionFilter(c.reactionFilter);
+    setMoonsignFilter(c.moonsignFilter);
+    setHexereiFilter(c.hexereiFilter);
     setAscensionStatFilter(c.ascensionStatFilter);
     setMainStatFilter(c.mainStatFilter);
     setSort(c.sort);
@@ -385,6 +403,8 @@ export function RichPickerDialog({
       weaponTypeFilter,
       regionFilter,
       reactionFilter,
+      moonsignFilter,
+      hexereiFilter,
       ascensionStatFilter,
       mainStatFilter,
       sort,
@@ -396,6 +416,8 @@ export function RichPickerDialog({
     weaponTypeFilter,
     regionFilter,
     reactionFilter,
+    moonsignFilter,
+    hexereiFilter,
     ascensionStatFilter,
     mainStatFilter,
     sort,
@@ -495,6 +517,10 @@ export function RichPickerDialog({
         );
       }
     }
+    if (moonsignFilter === "yes")
+      out = out.filter((r) => r.isMoonsign);
+    if (hexereiFilter === "yes")
+      out = out.filter((r) => r.isHexerei);
     if (ascensionStatFilter !== "all")
       out = out.filter((r) => r.ascensionStat === ascensionStatFilter);
     return [...out].sort((a, b) => {
@@ -529,6 +555,8 @@ export function RichPickerDialog({
     weaponTypeFilter,
     regionFilter,
     reactionFilter,
+    moonsignFilter,
+    hexereiFilter,
     ascensionStatFilter,
     sort,
     ownedChars,
@@ -775,6 +803,36 @@ export function RichPickerDialog({
                       {reaction.label}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {kind === "character" && (
+              <Select value={moonsignFilter} onValueChange={setMoonsignFilter}>
+                <SelectTrigger
+                  className="h-8 text-xs w-auto min-w-[130px]"
+                  data-testid={`${testId}-moonsign`}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any Moonsign</SelectItem>
+                  <SelectItem value="yes">Moonsign only</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+
+            {kind === "character" && (
+              <Select value={hexereiFilter} onValueChange={setHexereiFilter}>
+                <SelectTrigger
+                  className="h-8 text-xs w-auto min-w-[125px]"
+                  data-testid={`${testId}-hexerei`}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any Hexerei</SelectItem>
+                  <SelectItem value="yes">Hexerei only</SelectItem>
                 </SelectContent>
               </Select>
             )}
