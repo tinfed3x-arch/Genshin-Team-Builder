@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import {
   getCharacterNames,
   getEffectiveCharacterData,
@@ -33,6 +34,9 @@ import {
   setWeaponOwned,
   setManyCharactersOwned,
   setManyWeaponsOwned,
+  getCharacterConstellation,
+  getWeaponRefinement,
+  importGoodInventory,
 } from "@/lib/inventory";
 
 type Kind = "character" | "weapon";
@@ -246,6 +250,10 @@ function InventoryGrid({ kind, rows, ownedSet }: InventoryGridProps) {
               kind === "character"
                 ? ELEMENT_COLORS[row.facetA] ?? "#888"
                 : "#888";
+            const constellation =
+              kind === "character" ? getCharacterConstellation(row.name) : null;
+            const refinement =
+              kind === "weapon" ? getWeaponRefinement(row.name) : null;
             return (
               <button
                 key={row.name}
@@ -297,6 +305,22 @@ function InventoryGrid({ kind, rows, ownedSet }: InventoryGridProps) {
                         {row.facetA}
                       </Badge>
                     )}
+                    {constellation !== null && (
+                      <Badge
+                        variant="outline"
+                        className="px-1.5 py-0 text-[10px] leading-none border-primary/40 text-primary"
+                      >
+                        C{constellation}
+                      </Badge>
+                    )}
+                    {owned && refinement !== null && refinement > 1 && (
+                      <Badge
+                        variant="outline"
+                        className="px-1.5 py-0 text-[10px] leading-none border-primary/40 text-primary"
+                      >
+                        R{refinement}
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </button>
@@ -310,6 +334,8 @@ function InventoryGrid({ kind, rows, ownedSet }: InventoryGridProps) {
 
 export default function InventoryPage() {
   const { ownedChars, ownedWeapons } = useInventory();
+  const { toast } = useToast();
+  const importInputRef = React.useRef<HTMLInputElement>(null);
 
   const charRows = React.useMemo(
     () => getCharacterNames().map(buildCharRow),
@@ -319,6 +345,30 @@ export default function InventoryPage() {
     () => getAllWeaponNames().map(buildWeapRow),
     []
   );
+
+  const handleGoodImport = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    try {
+      const result = importGoodInventory(await file.text());
+      const unknown =
+        result.unknownCharacters.length + result.unknownWeapons.length;
+      toast({
+        title: "GOOD inventory imported",
+        description: `${result.charactersImported} characters and ${result.weaponsImported} weapons added${unknown ? `; ${unknown} entries were not recognized` : ""}.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Import failed",
+        description:
+          error instanceof Error ? error.message : "The selected file could not be read.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="min-h-[100dvh] w-full bg-background p-4 md:p-8">
@@ -332,11 +382,28 @@ export default function InventoryPage() {
               Mark the characters and weapons you own. Use the "Owned only" toggle on the builder to filter pickers to your collection.
             </p>
           </div>
-          <Link href="/">
-            <Button variant="outline" data-testid="link-back-to-builder">
-              Back to Builder
+          <div className="flex flex-wrap justify-center md:justify-end gap-2">
+            <input
+              ref={importInputRef}
+              type="file"
+              accept=".json,.good,application/json"
+              className="hidden"
+              onChange={handleGoodImport}
+              data-testid="good-import-input"
+            />
+            <Button
+              variant="default"
+              onClick={() => importInputRef.current?.click()}
+              data-testid="import-good"
+            >
+              Import GOOD
             </Button>
-          </Link>
+            <Link href="/">
+              <Button variant="outline" data-testid="link-back-to-builder">
+                Back to Builder
+              </Button>
+            </Link>
+          </div>
         </header>
 
         <Card className="bg-card border-card-border shadow-lg">

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getAllWeaponNames, getCharacterNames } from "./genshin";
 
 const CHAR_KEY = "gtb:owned-characters";
 const WEAP_KEY = "gtb:owned-weapons";
@@ -8,6 +9,8 @@ const FLAG_WEAP_KEY = "gtb:owned-only-weapons";
 // users who already enabled "Owned only" before the split.
 const LEGACY_FLAG_KEY = "gtb:owned-only";
 const EVENT = "gtb:inventory-changed";
+const CHAR_CONSTELLATION_KEY = "gtb:character-constellations";
+const WEAP_REFINEMENT_KEY = "gtb:weapon-refinements";
 
 const EMPTY_SET: ReadonlySet<string> = new Set();
 
@@ -21,6 +24,166 @@ const safeParse = (raw: string | null): string[] => {
   } catch {
     return [];
   }
+};
+
+const safeParseNumberMap = (raw: string | null): Record<string, number> => {
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+    return Object.fromEntries(
+      Object.entries(parsed).filter(
+        ([, value]) => typeof value === "number" && Number.isFinite(value),
+      ),
+    ) as Record<string, number>;
+  } catch {
+    return {};
+  }
+};
+
+const normalizeKey = (value: string): string =>
+  value.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+const resolveNames = (available: string[]): Map<string, string> =>
+  new Map(available.map((name) => [normalizeKey(name), name]));
+
+const resolveGoodName = (
+  raw: unknown,
+  available: Map<string, string>,
+): string | null => {
+  if (typeof raw !== "string") return null;
+  const direct = available.get(normalizeKey(raw));
+  if (direct) return direct;
+  return null;
+};
+
+const validConstellation = (value: unknown): number | null =>
+  typeof value === "number" &&
+  Number.isInteger(value) &&
+  value >= 0 &&
+  value <= 6
+    ? value
+    : null;
+
+const validRefinement = (value: unknown): number | null =>
+  typeof value === "number" &&
+  Number.isInteger(value) &&
+  value >= 1 &&
+  value <= 5
+    ? value
+    : null;
+
+export type GoodImportResult = {
+  charactersImported: number;
+  weaponsImported: number;
+  unknownCharacters: string[];
+  unknownWeapons: string[];
+};
+
+export const importGoodInventory = (raw: string): GoodImportResult => {
+  const parsed: unknown = JSON.parse(raw);
+  if (!parsed || typeof parsed !== "object") {
+    throw new Error("The file does not contain a GOOD JSON object.");
+  }
+  const source = parsed as { characters?: unknown; weapons?: unknown };
+  if (!Array.isArray(source.characters) && !Array.isArray(source.weapons)) {
+    throw new Error("This file does not contain GOOD character or weapon data.");
+  }
+
+  const characterNames = resolveNames(getCharacterNames());
+  const weaponNames = resolveNames(getAllWeaponNames());
+  const importedCharacters = new Set(getOwnedCharacters());
+  const importedWeapons = new Set(getOwnedWeapons());
+  const characterConstellations = safeParseNumberMap(
+    window.localStorage.getItem(CHAR_CONSTELLATION_KEY),
+  );
+  const weaponRefinements = safeParseNumberMap(
+    window.localStorage.getItem(WEAP_REFINEMENT_KEY),
+  );
+  const unknownCharacters: string[] = [];
+  const unknownWeapons: string[] = [];
+  let charactersImported = 0;
+  let weaponsImported = 0;
+
+  const characterEntries = Array.isArray(source.characters)
+    ? source.characters
+    : [];
+  const weaponEntries = Array.isArray(source.weapons) ? source.weapons : [];
+
+  for (const entry of characterEntries) {
+    if (!entry || typeof entry !== "object") continue;
+    const item = entry as Record<string, unknown>;
+    const rawName = item.key ?? item.name;
+    const name = resolveGoodName(rawName, characterNames);
+    // GOOD commonly uses "Traveler" for the account's Traveler entry.
+    const traveler =
+      typeof rawName === "string" &&
+      normalizeKey(rawName) === "traveler";
+    if (!name && !traveler) {
+      if (typeof rawName === "string") unknownCharacters.push(rawName);
+      continue;
+    }
+    const targetNames = traveler
+      ? getCharacterNames().filter((n) => n.startsWith("Traveler ("))
+      : [name as string];
+    for (const target of targetNames) importedCharacters.add(target);
+    const constellation = validConstellation(item.constellation);
+    if (constellation !== null) {
+      for (const target of targetNames) {
+        characterConstellations[target] = constellation;
+      }
+    }
+    charactersImported++;
+  }
+
+  for (const entry of weaponEntries) {
+    if (!entry || typeof entry !== "object") continue;
+    const item = entry as Record<string, unknown>;
+    const rawName = item.key ?? item.name;
+    const name = resolveGoodName(rawName, weaponNames);
+    if (!name) {
+      if (typeof rawName === "string") unknownWeapons.push(rawName);
+      continue;
+    }
+    importedWeapons.add(name);
+    const refinement = validRefinement(item.refinement);
+    if (refinement !== null) {
+      weaponRefinements[name] = Math.max(
+        weaponRefinements[name] ?? 1,
+        refinement,
+      );
+    }
+    weaponsImported++;
+  }
+
+  window.localStorage.setItem(CHAR_KEY, JSON.stringify([...importedCharacters]));
+  window.localStorage.setItem(WEAP_KEY, JSON.stringify([...importedWeapons]));
+  window.localStorage.setItem(
+    CHAR_CONSTELLATION_KEY,
+    JSON.stringify(characterConstellations),
+  );
+  window.localStorage.setItem(WEAP_REFINEMENT_KEY, JSON.stringify(weaponRefinements));
+  notify();
+
+  return {
+    charactersImported,
+    weaponsImported,
+    unknownCharacters: [...new Set(unknownCharacters)],
+    unknownWeapons: [...new Set(unknownWeapons)],
+  };
+};
+
+export const getCharacterConstellation = (name: string): number | null => {
+  if (typeof window === "undefined") return null;
+  return (
+    safeParseNumberMap(window.localStorage.getItem(CHAR_CONSTELLATION_KEY))[name] ??
+    null
+  );
+};
+
+export const getWeaponRefinement = (name: string): number => {
+  if (typeof window === "undefined") return 1;
+  return safeParseNumberMap(window.localStorage.getItem(WEAP_REFINEMENT_KEY))[name] ?? 1;
 };
 
 // Cached snapshots — required for useSyncExternalStore stability.

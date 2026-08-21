@@ -48,7 +48,7 @@ import {
   stripHtml,
   formatWeaponSubstat,
 } from "@/lib/genshin";
-import { useInventory } from "@/lib/inventory";
+import { getWeaponRefinement, useInventory } from "@/lib/inventory";
 import { getHexereiData } from "@/lib/hexerei";
 import { getRevelationData } from "@/lib/revelation";
 
@@ -90,7 +90,7 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
     if (v > 0) openSection(constellationSectionId);
   };
   const setWeaponName = (v: string | null) => {
-    update({ weaponName: v, weaponRefinement: 1 });
+    update({ weaponName: v, weaponRefinement: v ? getWeaponRefinement(v) : 1 });
     if (v) openSection(weaponSectionId);
   };
   const setWeaponRefinement = (v: number) => update({ weaponRefinement: v });
