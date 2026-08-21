@@ -29,6 +29,7 @@ import {
   isTravelerForm,
   stripHtml,
 } from "@/lib/genshin";
+import { getCharacterConstellation, useInventory } from "@/lib/inventory";
 
 export type PickerKind = "character" | "weapon" | "artifact";
 
@@ -52,11 +53,29 @@ export const REACTION_ELEMENTS: Record<string, ReadonlyArray<string>> = {
   Aggravate: ["Electro", "Dendro"],
   Spread: ["Electro", "Dendro"],
   "Lunar Crystallize": ["Hydro", "Geo"],
+  "Lunar-Charged": ["Hydro", "Electro"],
   "Stellar-Conduct": ["Cryo", "Electro"],
   "Stellar Swirl": ["Anemo", "Cryo"],
 };
 
-const REACTION_NAMES = Object.keys(REACTION_ELEMENTS);
+const reactionElementKey = (elements: ReadonlyArray<string>): string =>
+  [...new Set(elements)].sort().join("|");
+
+const REACTION_OPTIONS = Object.entries(REACTION_ELEMENTS).reduce<
+  Array<{ value: string; label: string }>
+>((options, [name, elements]) => {
+  const existing = options.find(
+    (option) =>
+      reactionElementKey(REACTION_ELEMENTS[option.value]) ===
+      reactionElementKey(elements),
+  );
+  if (existing) {
+    existing.label = `${existing.label} / ${name}`;
+  } else {
+    options.push({ value: name, label: name });
+  }
+  return options;
+}, []);
 
 interface RichPickerDialogProps {
   kind: PickerKind;
@@ -300,6 +319,7 @@ export function RichPickerDialog({
   testId,
 }: RichPickerDialogProps) {
   const [open, setOpen] = React.useState(false);
+  const { ownedChars } = useInventory();
   // Search query is intentionally NOT persisted across slots — it's typed
   // contextually for the slot you're filling, not a long-lived preference.
   const [query, setQuery] = React.useState("");
@@ -741,9 +761,9 @@ export function RichPickerDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Any reaction</SelectItem>
-                  {REACTION_NAMES.map((r) => (
-                    <SelectItem key={r} value={r}>
-                      {r}
+                  {REACTION_OPTIONS.map((reaction) => (
+                    <SelectItem key={reaction.value} value={reaction.value}>
+                      {reaction.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -825,6 +845,7 @@ export function RichPickerDialog({
                 rows={filteredChars}
                 value={value}
                 onSelect={select}
+                ownedCharacters={ownedChars}
                 testId={testId}
               />
             )}
@@ -874,11 +895,13 @@ function CharacterGrid({
   rows,
   value,
   onSelect,
+  ownedCharacters,
   testId,
 }: {
   rows: CharRow[];
   value: string | null;
   onSelect: (name: string) => void;
+  ownedCharacters: ReadonlySet<string>;
   testId?: string;
 }) {
   return (
@@ -922,8 +945,18 @@ function CharacterGrid({
                 />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-medium text-foreground truncate">
-                  {r.name}
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <div className="text-sm font-medium text-foreground truncate">
+                    {r.name}
+                  </div>
+                  {ownedCharacters.has(r.name) && (
+                    <Badge
+                      variant="outline"
+                      className="shrink-0 px-1.5 py-0 text-[10px] leading-none border-primary/40 text-primary"
+                    >
+                      C{getCharacterConstellation(r.name) ?? 0}
+                    </Badge>
+                  )}
                 </div>
                 <div className="text-[10px] text-yellow-500 leading-none mt-0.5">
                   {renderStars(r.rarity)}
