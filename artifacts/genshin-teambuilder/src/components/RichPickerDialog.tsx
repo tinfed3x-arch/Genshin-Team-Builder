@@ -504,6 +504,12 @@ export function RichPickerDialog({
           return b.name.localeCompare(a.name);
         case "rarity-asc":
           return a.rarity - b.rarity || a.name.localeCompare(b.name);
+        case "constellation-desc":
+          return (
+            (getCharacterConstellation(b.name) ?? 0) -
+              (getCharacterConstellation(a.name) ?? 0) ||
+            a.name.localeCompare(b.name)
+          );
         case "element":
           return (
             a.element.localeCompare(b.element) || a.name.localeCompare(b.name)
@@ -524,6 +530,7 @@ export function RichPickerDialog({
     reactionFilter,
     ascensionStatFilter,
     sort,
+    ownedChars,
   ]);
 
   const filteredWeaps = React.useMemo(() => {
@@ -606,6 +613,7 @@ export function RichPickerDialog({
       ? [
           { v: "rarity-desc", l: "Rarity (high → low)" },
           { v: "rarity-asc", l: "Rarity (low → high)" },
+          { v: "constellation-desc", l: "Constellation (high → low)" },
           { v: "element", l: "Element" },
           { v: "name-asc", l: "Name (A → Z)" },
           { v: "name-desc", l: "Name (Z → A)" },
