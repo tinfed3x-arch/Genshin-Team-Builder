@@ -9,6 +9,8 @@ import {
   decodeTeam,
 } from "@/lib/teamState";
 
+const mondstadtBackground = `${import.meta.env.BASE_URL}images/mondstadt-aerial.jpg`;
+
 export default function Home() {
   const [team, setTeam] = useState<TeamState>(defaultTeam);
 
@@ -30,7 +32,14 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-[100dvh] w-full bg-background p-4 md:p-8">
+    <div className="relative isolate min-h-[100dvh] w-full overflow-hidden p-4 md:p-8">
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center"
+        style={{
+          backgroundImage: `linear-gradient(180deg, rgba(8, 12, 24, 0.82) 0%, rgba(8, 12, 24, 0.92) 46%, rgba(8, 12, 24, 0.97) 100%), url(${mondstadtBackground})`,
+        }}
+      />
       <div className="max-w-[1600px] mx-auto">
         <header className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div className="text-center md:text-left">
