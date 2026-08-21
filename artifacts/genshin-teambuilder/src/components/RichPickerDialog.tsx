@@ -593,6 +593,8 @@ export function RichPickerDialog({
       out = out.filter((r) => owned.has(r.name) || r.name === value);
     }
     return [...out].sort((a, b) => {
+      const refinementOf = (name: string) =>
+        ownedWeapons.has(name) ? getWeaponRefinement(name) : 0;
       switch (sort) {
         case "name-asc":
           return a.name.localeCompare(b.name);
@@ -604,6 +606,16 @@ export function RichPickerDialog({
           return b.rarity - a.rarity || a.name.localeCompare(b.name);
         case "atk-asc":
           return a.baseAtk - b.baseAtk || a.name.localeCompare(b.name);
+        case "refinement-asc":
+          return (
+            refinementOf(a.name) - refinementOf(b.name) ||
+            a.name.localeCompare(b.name)
+          );
+        case "refinement-desc":
+          return (
+            refinementOf(b.name) - refinementOf(a.name) ||
+            a.name.localeCompare(b.name)
+          );
         case "atk-desc":
         default:
           return b.baseAtk - a.baseAtk || a.name.localeCompare(b.name);
@@ -668,6 +680,8 @@ export function RichPickerDialog({
       ? [
           { v: "atk-desc", l: "Base ATK (high → low)" },
           { v: "atk-asc", l: "Base ATK (low → high)" },
+          { v: "refinement-desc", l: "Refinement (high → low)" },
+          { v: "refinement-asc", l: "Refinement (low → high)" },
           { v: "rarity-desc", l: "Rarity (high → low)" },
           { v: "rarity-asc", l: "Rarity (low → high)" },
           { v: "name-asc", l: "Name (A → Z)" },
