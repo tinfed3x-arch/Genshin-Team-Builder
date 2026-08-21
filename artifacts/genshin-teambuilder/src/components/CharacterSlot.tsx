@@ -52,7 +52,6 @@ import {
 import {
   getCharacterConstellation,
   getWeaponRefinement,
-  useInventory,
 } from "@/lib/inventory";
 import { getHexereiData } from "@/lib/hexerei";
 import { getRevelationData } from "@/lib/revelation";
@@ -130,18 +129,8 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
       };
     });
 
-  const { ownedChars, ownedWeapons, ownedOnlyCharacters, ownedOnlyWeapons } =
-    useInventory();
-
   const allCharacterNames = useMemo(() => getCharacterNames(), []);
-  const characterOptions = useMemo(() => {
-    if (!ownedOnlyCharacters) return allCharacterNames;
-    const filtered = allCharacterNames.filter((n) => ownedChars.has(n));
-    if (characterName && !filtered.includes(characterName)) {
-      return [characterName, ...filtered];
-    }
-    return filtered;
-  }, [allCharacterNames, ownedOnlyCharacters, ownedChars, characterName]);
+  const characterOptions = allCharacterNames;
 
   const charData = useMemo(
     () => (characterName ? getEffectiveCharacterData(characterName) : null),
@@ -162,13 +151,8 @@ export default function CharacterSlot({ slotIndex, state, onChange }: CharacterS
     const base = !charData
       ? getAllWeaponNames()
       : getWeaponNamesByType(charData.weaponType);
-    if (!ownedOnlyWeapons) return base;
-    const filtered = base.filter((n) => ownedWeapons.has(n));
-    if (weaponName && !filtered.includes(weaponName)) {
-      return [weaponName, ...filtered];
-    }
-    return filtered;
-  }, [charData, ownedOnlyWeapons, ownedWeapons, weaponName]);
+    return base;
+  }, [charData]);
 
   const weaponData = useMemo(
     () => (weaponName ? getWeaponData(weaponName) : null),

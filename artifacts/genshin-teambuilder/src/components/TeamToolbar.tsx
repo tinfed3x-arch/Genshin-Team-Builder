@@ -2,13 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import {
-  useInventory,
-  setOwnedOnlyCharacters,
-  setOwnedOnlyWeapons,
-} from "@/lib/inventory";
 import {
   Dialog,
   DialogContent,
@@ -46,14 +39,6 @@ interface TeamToolbarProps {
 
 export default function TeamToolbar({ team, onLoad }: TeamToolbarProps) {
   const { toast } = useToast();
-  const {
-    ownedOnlyCharacters,
-    ownedOnlyWeapons,
-    ownedChars,
-    ownedWeapons,
-  } = useInventory();
-  const charsInventoryEmpty = ownedChars.size === 0;
-  const weaponsInventoryEmpty = ownedWeapons.size === 0;
   const [savedNames, setSavedNames] = useState<string[]>([]);
   const [saveOpen, setSaveOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
@@ -215,53 +200,11 @@ export default function TeamToolbar({ team, onLoad }: TeamToolbarProps) {
         Clear
       </Button>
 
-      <div className="flex items-center gap-3 ml-auto pl-2 border-l border-border/60 flex-wrap">
-        <div className="flex items-center gap-2">
-          <Switch
-            id="owned-only-characters-toggle"
-            checked={ownedOnlyCharacters}
-            onCheckedChange={setOwnedOnlyCharacters}
-            disabled={charsInventoryEmpty && !ownedOnlyCharacters}
-            data-testid="toggle-owned-only-characters"
-          />
-          <Label
-            htmlFor="owned-only-characters-toggle"
-            className="text-sm cursor-pointer select-none"
-            title={
-              charsInventoryEmpty
-                ? "Mark characters as owned in My Inventory first"
-                : "Only show owned characters in the character picker"
-            }
-          >
-            Owned characters
-          </Label>
-        </div>
-        <div className="flex items-center gap-2">
-          <Switch
-            id="owned-only-weapons-toggle"
-            checked={ownedOnlyWeapons}
-            onCheckedChange={setOwnedOnlyWeapons}
-            disabled={weaponsInventoryEmpty && !ownedOnlyWeapons}
-            data-testid="toggle-owned-only-weapons"
-          />
-          <Label
-            htmlFor="owned-only-weapons-toggle"
-            className="text-sm cursor-pointer select-none"
-            title={
-              weaponsInventoryEmpty
-                ? "Mark weapons as owned in My Inventory first"
-                : "Only show owned weapons in the weapon picker"
-            }
-          >
-            Owned weapons
-          </Label>
-        </div>
-        <Link href="/inventory">
-          <Button variant="outline" size="sm" data-testid="link-inventory">
-            My Inventory
-          </Button>
-        </Link>
-      </div>
+      <Link href="/inventory">
+        <Button variant="outline" size="sm" data-testid="link-inventory">
+          My Inventory
+        </Button>
+      </Link>
 
       <Dialog open={shareOpen} onOpenChange={setShareOpen}>
         <DialogContent>

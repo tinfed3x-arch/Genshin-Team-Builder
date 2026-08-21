@@ -192,6 +192,7 @@ type FilterCacheEntry = {
   reactionFilter: string;
   moonsignFilter: string;
   hexereiFilter: string;
+  ownedFilter: string;
   ascensionStatFilter: string;
   mainStatFilter: string;
   sort: string;
@@ -206,6 +207,7 @@ const makeDefaultFilters = (
   reactionFilter: "all",
   moonsignFilter: "all",
   hexereiFilter: "all",
+  ownedFilter: "all",
   ascensionStatFilter: "all",
   mainStatFilter: "all",
   // Alphabetical by name is the default sort across every picker kind so
@@ -330,7 +332,7 @@ export function RichPickerDialog({
   testId,
 }: RichPickerDialogProps) {
   const [open, setOpen] = React.useState(false);
-  const { ownedChars } = useInventory();
+  const { ownedChars, ownedWeapons } = useInventory();
   // Search query is intentionally NOT persisted across slots — it's typed
   // contextually for the slot you're filling, not a long-lived preference.
   const [query, setQuery] = React.useState("");
@@ -360,6 +362,9 @@ export function RichPickerDialog({
   const [hexereiFilter, setHexereiFilter] = React.useState<string>(
     initial.hexereiFilter,
   );
+  const [ownedFilter, setOwnedFilter] = React.useState<string>(
+    initial.ownedFilter,
+  );
   const [ascensionStatFilter, setAscensionStatFilter] = React.useState<string>(
     initial.ascensionStatFilter,
   );
@@ -387,6 +392,7 @@ export function RichPickerDialog({
     setReactionFilter(c.reactionFilter);
     setMoonsignFilter(c.moonsignFilter);
     setHexereiFilter(c.hexereiFilter);
+    setOwnedFilter(c.ownedFilter);
     setAscensionStatFilter(c.ascensionStatFilter);
     setMainStatFilter(c.mainStatFilter);
     setSort(c.sort);
@@ -405,6 +411,7 @@ export function RichPickerDialog({
       reactionFilter,
       moonsignFilter,
       hexereiFilter,
+      ownedFilter,
       ascensionStatFilter,
       mainStatFilter,
       sort,
@@ -418,6 +425,7 @@ export function RichPickerDialog({
     reactionFilter,
     moonsignFilter,
     hexereiFilter,
+    ownedFilter,
     ascensionStatFilter,
     mainStatFilter,
     sort,
@@ -521,6 +529,10 @@ export function RichPickerDialog({
       out = out.filter((r) => r.isMoonsign);
     if (hexereiFilter === "yes")
       out = out.filter((r) => r.isHexerei);
+    if (ownedFilter === "yes") {
+      const owned = new Set(ownedChars);
+      out = out.filter((r) => owned.has(r.name) || r.name === value);
+    }
     if (ascensionStatFilter !== "all")
       out = out.filter((r) => r.ascensionStat === ascensionStatFilter);
     return [...out].sort((a, b) => {
@@ -557,6 +569,7 @@ export function RichPickerDialog({
     reactionFilter,
     moonsignFilter,
     hexereiFilter,
+    ownedFilter,
     ascensionStatFilter,
     sort,
     ownedChars,
@@ -570,6 +583,10 @@ export function RichPickerDialog({
       out = out.filter((r) => r.rarity === Number(rarityFilter));
     if (mainStatFilter !== "all")
       out = out.filter((r) => r.mainStat === mainStatFilter);
+    if (ownedFilter === "yes") {
+      const owned = new Set(ownedWeapons);
+      out = out.filter((r) => owned.has(r.name) || r.name === value);
+    }
     return [...out].sort((a, b) => {
       switch (sort) {
         case "name-asc":
@@ -587,7 +604,17 @@ export function RichPickerDialog({
           return b.baseAtk - a.baseAtk || a.name.localeCompare(b.name);
       }
     });
-  }, [kind, weapRows, q, rarityFilter, mainStatFilter, sort]);
+  }, [
+    kind,
+    weapRows,
+    q,
+    rarityFilter,
+    mainStatFilter,
+    ownedFilter,
+    ownedWeapons,
+    value,
+    sort,
+  ]);
 
   const filteredArts = React.useMemo(() => {
     if (kind !== "artifact") return [] as ArtRow[];
@@ -626,6 +653,9 @@ export function RichPickerDialog({
     setReactionFilter("all");
     setAscensionStatFilter("all");
     setMainStatFilter("all");
+    setMoonsignFilter("all");
+    setHexereiFilter("all");
+    setOwnedFilter("all");
   };
 
   const sortOptions =
@@ -833,6 +863,21 @@ export function RichPickerDialog({
                 <SelectContent>
                   <SelectItem value="all">Any Hexerei</SelectItem>
                   <SelectItem value="yes">Hexerei only</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+
+            {(kind === "character" || kind === "weapon") && (
+              <Select value={ownedFilter} onValueChange={setOwnedFilter}>
+                <SelectTrigger
+                  className="h-8 text-xs w-auto min-w-[120px]"
+                  data-testid={`${testId}-owned`}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All items</SelectItem>
+                  <SelectItem value="yes">Owned only</SelectItem>
                 </SelectContent>
               </Select>
             )}

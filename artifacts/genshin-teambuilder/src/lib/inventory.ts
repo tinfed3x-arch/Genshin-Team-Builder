@@ -299,7 +299,19 @@ export const getOwnedOnlyWeapons = (): boolean =>
 
 export const setCharacterOwned = (name: string, owned: boolean): void => {
   const cur = new Set(getOwnedCharacters());
-  if (owned) cur.add(name);
+  if (owned) {
+    cur.add(name);
+    const constellations = safeParseNumberMap(
+      window.localStorage.getItem(CHAR_CONSTELLATION_KEY),
+    );
+    if (constellations[name] === undefined) {
+      constellations[name] = 0;
+      window.localStorage.setItem(
+        CHAR_CONSTELLATION_KEY,
+        JSON.stringify(constellations),
+      );
+    }
+  }
   else {
     cur.delete(name);
     writeNumberMapValue(CHAR_CONSTELLATION_KEY, name, null);
