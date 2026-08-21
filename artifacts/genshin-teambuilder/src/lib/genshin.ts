@@ -82,12 +82,17 @@ export const getConstellationData = (name: string) => {
   return data.constellations[name] ?? null;
 };
 
+const isSelectableWeapon = (name: string): boolean =>
+  Number(data.weapons[name]?.rarity ?? 0) >= 3;
+
 export const getWeaponNamesByType = (weaponType: string): string[] => {
-  return [...(data.weaponNamesByType[weaponType] ?? [])].sort();
+  return [...(data.weaponNamesByType[weaponType] ?? [])]
+    .filter(isSelectableWeapon)
+    .sort();
 };
 
 export const getAllWeaponNames = (): string[] => {
-  return [...data.allWeaponNames].sort();
+  return [...data.allWeaponNames].filter(isSelectableWeapon).sort();
 };
 
 export const getWeaponData = (name: string) => {
